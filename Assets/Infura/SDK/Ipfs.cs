@@ -80,7 +80,7 @@ namespace Infura.SDK
                 $"ipfs://{(await this.Client.FileSystem.AddFileAsync(source, options, (CancellationToken) token)).Id}";
         }
 
-        public async Task<string> UploadArray(string[] sources, bool isErc1155 = false, AddFileOptions options = null,
+        public async Task<string> UploadArray(IEnumerable<string> sources, bool isErc1155 = false, AddFileOptions options = null,
             CancellationToken? token = null)
         {
             token ??= CancellationToken.None;

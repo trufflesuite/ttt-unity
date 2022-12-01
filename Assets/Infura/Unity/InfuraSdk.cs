@@ -17,11 +17,11 @@ namespace Infura.Unity
 
         public IpfsOptions Ipfs;
 
-        public SdkClient Sdk { get; private set; }
+        public ApiClient Api { get; private set; }
         
         private void Start()
         {
-            Sdk = new SdkClient(new Auth(ProjectId, SecretId, RpcUrl, Chain, Ipfs));
+            Api = new ApiClient(new Auth(ProjectId, SecretId, RpcUrl, Chain, Ipfs));
         }
     }
 }
