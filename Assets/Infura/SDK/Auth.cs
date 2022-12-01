@@ -30,6 +30,8 @@ namespace Infura.SDK
             SecretId = secretId;
             RpcUrl = rpcUrl;
             ChainId = chainId;
+            
+            ValidateRpcUrl();
 
             if (ipfs == null) return;
             
@@ -41,7 +43,6 @@ namespace Infura.SDK
 
             Ipfs = new Ipfs(ipfs.ProjectId, ipfs.ApiKeySecret);
             
-            ValidateRpcUrl();
         }
 
         public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, Ipfs ipfs = null)

@@ -19,9 +19,23 @@ namespace Infura.Unity
 
         public ApiClient Api { get; private set; }
         
+        public Auth Auth { get; private set; }
+        
         private void Start()
         {
-            Api = new ApiClient(new Auth(ProjectId, SecretId, RpcUrl, Chain, Ipfs));
+            if (string.IsNullOrWhiteSpace(Ipfs.ProjectId))
+            {
+                Ipfs = null;
+                Debug.LogWarning("No IPFS ProjectId set, disabling IPFS");
+            }
+            else if (string.IsNullOrWhiteSpace(Ipfs.ApiKeySecret))
+            {
+                Ipfs = null;
+                Debug.LogWarning("No IPFS ApiKeySecret set, disabling IPFS");
+            }
+            
+            Auth = new Auth(ProjectId, SecretId, RpcUrl, Chain, Ipfs);
+            Api = new ApiClient(Auth);
         }
     }
 }

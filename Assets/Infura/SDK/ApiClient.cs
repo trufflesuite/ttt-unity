@@ -69,7 +69,7 @@ namespace Infura.SDK
             return JsonConvert.DeserializeObject<GenericMetadataResponse<T>>(json);
         }
         
-        public async Task<GenericMetadataResponse<SimpleMetadata>> GetTokenMetadata(string contractAddress, string tokenId)
+        public async Task<GenericMetadataResponse<Metadata>> GetTokenMetadata(string contractAddress, string tokenId)
         {
             if (string.IsNullOrWhiteSpace(contractAddress))
                 throw new ArgumentException("Invalid account address");
@@ -77,7 +77,7 @@ namespace Infura.SDK
             var apiUrl = $"{ApiPath}/nfts/{contractAddress}/tokens/{tokenId}";
             var json = await HttpClient.Get(apiUrl);
 
-            return JsonConvert.DeserializeObject<GenericMetadataResponse<SimpleMetadata>>(json);
+            return JsonConvert.DeserializeObject<GenericMetadataResponse<Metadata>>(json);
         }
 
         public Task<string> StoreFile(string file)
