@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Ipfs.Http;
+using Nethereum.Web3;
 
 namespace Infura.SDK
 {
@@ -15,6 +16,8 @@ namespace Infura.SDK
         public Chains ChainId { get; }
         
         public Ipfs Ipfs { get; }
+        
+        public Web3 Provider { get; set; }
 
         public string ApiAuth
         {
@@ -24,7 +27,7 @@ namespace Infura.SDK
             }
         }
         
-        public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, IpfsOptions ipfs = null)
+        public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, IpfsOptions ipfs = null, Web3 provider = null)
         {
             ProjectId = projectId;
             SecretId = secretId;
@@ -42,7 +45,6 @@ namespace Infura.SDK
                 throw new ArgumentException("Expected IPFS API Key Secret");
 
             Ipfs = new Ipfs(ipfs.ProjectId, ipfs.ApiKeySecret);
-            
         }
 
         public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, Ipfs ipfs = null)

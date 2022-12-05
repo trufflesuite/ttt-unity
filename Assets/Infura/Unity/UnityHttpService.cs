@@ -16,20 +16,23 @@ namespace Infura.Unity
             public string url;
             public string @params;
             public bool isPost;
-            public string apiKey;
+            public string authKey;
+            public string authValue;
         }
 
         public class UnityHttpServiceProvider : IHttpService
         {
             private UnityHttpService service;
             private string baseUrl;
-            private string apiKey;
+            private string authValue;
+            private string authKey;
 
-            public UnityHttpServiceProvider(string baseUrl, string apiKey, UnityHttpService service)
+            public UnityHttpServiceProvider(string baseUrl, string authKey, string authValue, UnityHttpService service)
             {
                 this.service = service;
                 this.baseUrl = baseUrl;
-                this.apiKey = apiKey;
+                this.authValue = authValue;
+                this.authKey = authKey;
             }
 
             public Task<string> Get(string uri)
@@ -39,7 +42,8 @@ namespace Infura.Unity
                 {
                     url = fullUrl,
                     requestTask = new TaskCompletionSource<string>(),
-                    apiKey = apiKey
+                    authKey = authKey,
+                    authValue = authValue
                 };
                 
                 service.requests.Enqueue(request);
@@ -56,7 +60,8 @@ namespace Infura.Unity
                     requestTask = new TaskCompletionSource<string>(),
                     isPost = true,
                     @params = @params,
-                    apiKey = apiKey
+                    authKey = authKey,
+                    authValue = authValue
                 };
                 
                 service.requests.Enqueue(request);
@@ -73,9 +78,9 @@ namespace Infura.Unity
             HttpServiceFactory.SetCreator(CreateHttpService);
         }
 
-        private IHttpService CreateHttpService(string baseUrl, string apiKey)
+        private IHttpService CreateHttpService(string baseUrl, string authHeaderValue, string authHeaderName = "Authorization")
         {
-            return new UnityHttpServiceProvider(baseUrl, apiKey, this);
+            return new UnityHttpServiceProvider(baseUrl, authHeaderName, authHeaderValue, this);
         }
 
         private void Update()
@@ -103,7 +108,7 @@ namespace Infura.Unity
                        ? UnityWebRequest.Post(request.url, request.@params)
                        : UnityWebRequest.Get(request.url))
             {
-                uwr.SetRequestHeader("Authorization", $"Basic {request.apiKey}");
+                uwr.SetRequestHeader(request.authKey, request.authValue);
                 uwr.SetRequestHeader("X-Infura-User-Agent", "infura/sdk-csharp 1.0.0");
                 
                 yield return uwr.SendWebRequest();

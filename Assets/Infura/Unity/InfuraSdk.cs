@@ -7,16 +7,38 @@ namespace Infura.Unity
     [RequireComponent(typeof(UnityHttpService))]
     public class InfuraSdk : MonoBehaviour
     {
-        public string ProjectId;
+        [Serializable]
+        public class InfuraOptionsData
+        {
+            public string ProjectId;
 
-        public string SecretId;
+            public string SecretId;
+        }
+        
+        [Serializable]
+        public class CNFTOptions
+        {
+            public string ApiKey;
+        }
 
-        public Chains Chain;
+        [Serializable]
+        public class GeneralOptions
+        {
+            public Chains Chain;
 
-        public string RpcUrl;
+            public string RpcUrl;
+        }
 
-        public IpfsOptions Ipfs;
+        public InfuraOptionsData InfuraOptions;
 
+        public CNFTOptions OrganizationOptions;
+        
+        public IpfsOptions IpfsOptions;
+
+        public GeneralOptions NetworkOptions;
+        
+        public CNFT Organization { get; private set; }
+        
         public ApiClient Api { get; private set; }
         
         public Auth Auth { get; private set; }
@@ -34,7 +56,7 @@ namespace Infura.Unity
                 Debug.LogWarning("No IPFS ApiKeySecret set, disabling IPFS");
             }
             
-            Auth = new Auth(ProjectId, SecretId, RpcUrl, Chain, Ipfs);
+            Auth = new Auth(Infura.ProjectId, Infura.SecretId, NetworkOptions.RpcUrl, NetworkOptions.Chain, Ipfs);
             Api = new ApiClient(Auth);
         }
     }
