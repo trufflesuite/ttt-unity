@@ -1,5 +1,8 @@
 ﻿namespace Infura.SDK
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum Chains
     {
         Mainnet = 1,

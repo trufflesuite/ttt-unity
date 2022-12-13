@@ -2,13 +2,27 @@
 
 namespace Infura.SDK
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ChainsExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <returns></returns>
         public static string AsName(this Chains chain)
         {
             return nameof(chain);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static string RpcUrl(this Chains chain)
         {
             return chain switch

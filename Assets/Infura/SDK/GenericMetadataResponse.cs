@@ -8,7 +8,7 @@ namespace Infura.SDK
         public string Contract { get; set; }
         
         [JsonProperty("tokenId")]
-        public int TokenId { get; set; }
+        public string TokenId { get; set; }
         
         [JsonProperty("metadata")]
         public T Metadata { get; set; }

@@ -5,20 +5,44 @@ using Nethereum.Web3;
 
 namespace Infura.SDK
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Auth
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string ProjectId { get; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public string SecretId { get; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public string RpcUrl { get; private set; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public Chains ChainId { get; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public Ipfs Ipfs { get; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public Web3 Provider { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ApiAuth
         {
             get
@@ -27,6 +51,16 @@ namespace Infura.SDK
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="secretId"></param>
+        /// <param name="rpcUrl"></param>
+        /// <param name="chainId"></param>
+        /// <param name="ipfs"></param>
+        /// <param name="provider"></param>
+        /// <exception cref="ArgumentException"></exception>
         public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, IpfsOptions ipfs = null, Web3 provider = null)
         {
             ProjectId = projectId;
@@ -47,6 +81,14 @@ namespace Infura.SDK
             Ipfs = new Ipfs(ipfs.ProjectId, ipfs.ApiKeySecret);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="secretId"></param>
+        /// <param name="rpcUrl"></param>
+        /// <param name="chainId"></param>
+        /// <param name="ipfs"></param>
         public Auth(string projectId, string secretId, string rpcUrl, Chains chainId, Ipfs ipfs = null)
         {
             ProjectId = projectId;
