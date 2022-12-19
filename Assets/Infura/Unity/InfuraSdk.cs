@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Infura.SDK;
+using Infura.Unity.Network;
 using UnityEngine;
 
 namespace Infura.Unity
@@ -50,8 +52,18 @@ namespace Infura.Unity
         public ApiClient SelfCustody { get; private set; }
         
         public Auth Auth { get; private set; }
-        
-        private async void Start()
+
+        private TaskCompletionSource<bool> SdkReadyTaskSource = new TaskCompletionSource<bool>();
+
+        public Task SdkReadyTask
+        {
+            get
+            {
+                return SdkReadyTaskSource.Task;
+            }
+        }
+
+        private async void Start()  
         {
             if (string.IsNullOrWhiteSpace(IpfsOptions.ProjectId))
             {
@@ -67,6 +79,8 @@ namespace Infura.Unity
             Auth = new Auth(InfuraOptions.ProjectId, InfuraOptions.SecretId, NetworkOptions.RpcUrl, NetworkOptions.Chain, IpfsOptions);
             SelfCustody = new ApiClient(Auth);
             OrganizationCustody = new CNFTClient(OrganizationOptions.ApiKey, Auth.Ipfs);
+            
+            SdkReadyTaskSource.SetResult(true);
         }
     }
 }

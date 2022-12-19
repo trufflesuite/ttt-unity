@@ -117,5 +117,10 @@ namespace Infura.SDK
         {
             return Client.GetTokenMetadata<T>(Id, tokenId);
         }
+
+        public Task<ItemData[]> GetItems()
+        {
+            return Client.GetItemsFromCollection(Id);
+        }
     }
 }

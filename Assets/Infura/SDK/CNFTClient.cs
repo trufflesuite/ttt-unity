@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -14,15 +15,17 @@ namespace Infura.SDK
         /// </summary>
         public const string NFT_API_URL = "https://platform.consensys-nft.com";
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ApiPath { get; }
-        
+        public const string ADMIN_API_URL = "https://admin-api.consensys-nft.com";
+
         /// <summary>
         /// 
         /// </summary>
         public IHttpService HttpClient { get; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public IHttpService AdminHttpClient { get; }
         
         /// <summary>
         /// 
@@ -40,9 +43,8 @@ namespace Infura.SDK
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("Expected non-null apiKey string");
 
-            ApiPath = $"{NFT_API_URL}/api/v2";
-
             this.HttpClient = HttpServiceFactory.NewHttpService(NFT_API_URL, apiKey, "CNFT-Api-Key");
+            this.AdminHttpClient = HttpServiceFactory.NewHttpService(ADMIN_API_URL, apiKey, "CNFT-Api-Key");
 
             IpfsClient = ipfs;
         }
@@ -54,7 +56,7 @@ namespace Infura.SDK
         /// <exception cref="Exception"></exception>
         public async Task<CollectionData[]> GetAllCollections()
         {
-            var apiUrl = $"{ApiPath}/collections";
+            var apiUrl = $"/api/v2/collections";
 
             var json = await this.HttpClient.Get(apiUrl);
 
@@ -82,7 +84,7 @@ namespace Infura.SDK
             if (string.IsNullOrWhiteSpace(collectionId))
                 throw new ArgumentException("Invalid collectionId");
 
-            var apiUrl = $"{ApiPath}/collections/{collectionId}";
+            var apiUrl = $"/api/v2/collections/{collectionId}";
 
             var json = await this.HttpClient.Get(apiUrl);
 
@@ -92,6 +94,40 @@ namespace Infura.SDK
             data.Client = this;
 
             return data;
+        }
+
+        public async Task<ItemData[]> GetItemsFromCollection(string collectionId)
+        {
+            if (string.IsNullOrWhiteSpace(collectionId))
+                throw new ArgumentException("Invalid collectionId");
+            
+            var apiUrl = $"/api/v2/collections/{collectionId}/items";
+
+            var json = await this.HttpClient.Get(apiUrl);
+
+            var data = JsonConvert.DeserializeObject<ItemData[]>(json);
+            if (data == null) throw new Exception("Could not find collection");
+
+            var items = new List<ItemData>();
+            foreach (var itemData in data)
+            {
+                var id = itemData.Id;
+
+                var itemApiUrl = $"/v1/items/{id}";
+
+                var itemJson = await this.AdminHttpClient.Get(itemApiUrl);
+
+                var adminItem = JsonConvert.DeserializeObject<ItemData>(itemJson);
+
+                if (adminItem != null)
+                {
+                    adminItem.Client = this;
+
+                    items.Add(adminItem);
+                }
+            }
+
+            return items.ToArray();
         }
 
         /// <summary>
@@ -111,7 +147,7 @@ namespace Infura.SDK
             if (string.IsNullOrWhiteSpace(tokenId))
                 throw new ArgumentException("Invalid tokenId");
 
-            var apiUrl = $"{ApiPath}/collections/{collectionId}/metadata/{tokenId}";
+            var apiUrl = $"/api/v2/collections/{collectionId}/metadata/{tokenId}";
 
             var json = await this.HttpClient.Get(apiUrl);
 

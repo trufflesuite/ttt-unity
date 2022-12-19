@@ -14,7 +14,7 @@ namespace Infura.SDK
             if (authKey == "Authorization" && !authValue.StartsWith("Basic"))
                 authValue = $"Basic {authValue}";
 
-            return _instanceCreator(baseURL, authKey, authValue);
+            return _instanceCreator(baseURL, authValue, authKey);
         }
 
         public static void SetCreator(Func<string, string, string, IHttpService> creator)
