@@ -12,6 +12,9 @@ namespace Infura.Unity.Utils
 
             public void ShowUrl(string url)
             {
+                if (url.StartsWith("ipfs://"))
+                    url = url.Replace("ipfs://", "https://ipfs.io/ipfs/");
+                
                 ImageDownloadManager.Instance.EnqueueRequest(url, tex =>
                 {
                     var image = imageFunc();

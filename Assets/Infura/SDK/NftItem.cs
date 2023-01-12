@@ -16,5 +16,18 @@ namespace Infura.SDK
         
         [JsonProperty("type")]
         public string Type { get; set; }
+        
+        [JsonProperty("metadata")]
+        public Dictionary<string, object> Metadata { get; set; }
+
+        public string ImageUrl
+        {
+            get
+            {
+                if (Metadata.ContainsKey("image"))
+                    return Metadata["image"] as string;
+                return "";
+            }
+        }
     }
 }
