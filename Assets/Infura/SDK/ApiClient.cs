@@ -190,7 +190,23 @@ namespace Infura.SDK
             if (IpfsClient == null)
                 throw new Exception("IpfsClient not setup");
 
-            return IpfsClient.UploadArray(metadata.Select(m => JsonConvert.SerializeObject(m)), isErc1155);
+            return CreateFolder(metadata.Select(m => JsonConvert.SerializeObject(m)), isErc1155);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <param name="isErc1155"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public Task<string> CreateFolder(IEnumerable<string> metadata, bool isErc1155 = false)
+        {
+            if (IpfsClient == null)
+                throw new Exception("IpfsClient not setup");
+
+            return IpfsClient.UploadArray(metadata, isErc1155);
         }
     }
 }
