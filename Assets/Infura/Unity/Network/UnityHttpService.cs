@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Infura.SDK;
+using Infura.SDK.Network;
 using Infura.Unity.Utils;
 using UnityEngine.Networking;
 

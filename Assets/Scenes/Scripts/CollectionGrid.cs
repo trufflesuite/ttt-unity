@@ -1,6 +1,7 @@
 ﻿using System;
 using GalaxySdk.Utils;
 using Infura.SDK;
+using Infura.SDK.Organization;
 using Infura.Unity;
 using Infura.Unity.Utils;
 using MetaMask.Unity;
@@ -41,7 +42,7 @@ namespace Scenes.Scripts
             Debug.Log(nfts.Assets.Length);
             Debug.Log("========");
             
-            var collections = await sdk.OrganizationCustody.GetAllCollections();
+            /*var collections = await sdk.OrganizationCustody.GetAllCollections();
 
             foreach (var collection in collections)
             {
@@ -52,7 +53,7 @@ namespace Scenes.Scripts
                 var btn = collectionInstance.GetComponent<Button>();
                 if (btn != null)
                     btn.onClick.AddListener(delegate { CollectionSelected(collection); });
-            }
+            }*/
         }
 
         private void CollectionSelected(CollectionData collectionData)

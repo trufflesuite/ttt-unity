@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GalaxySdk.Utils;
 using Infura.SDK;
+using Infura.SDK.Organization;
 using Infura.Unity;
 using MetaMask.Unity;
 using TMPro;

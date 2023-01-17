@@ -1,6 +1,7 @@
 ﻿using System;
 using GalaxySdk.Utils;
 using Infura.SDK;
+using Infura.SDK.SelfCustody;
 using Infura.Unity;
 using Infura.Unity.Utils;
 using MetaMask.Unity;

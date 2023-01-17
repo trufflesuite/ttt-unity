@@ -7,14 +7,15 @@ namespace Infura.Unity
     {
         private InfuraSdk sdk;
 
-        private void Start()
+        private async void Start()
         {
             sdk = FindObjectOfType<InfuraSdk>();
-        }
 
-        private async void OnWinLevel()
-        {
-            var c = await sdk.OrganizationCustody.GetAllCollections();
+            await sdk.SdkReadyTask;
+
+            var results = sdk.SelfCustody.SearchNfts("poap");
+
+            results.Subscribe(n => Debug.Log(n.Name));
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Infura.SDK;
+using Infura.SDK.Common;
+using Infura.SDK.Network;
+using Infura.SDK.Organization;
+using Infura.SDK.SelfCustody;
 using Infura.Unity.Network;
 using UnityEngine;
 
@@ -16,12 +19,6 @@ namespace Infura.Unity
 
             public string SecretId;
         }
-        
-        [Serializable]
-        public class CNFTOptions
-        {
-            public string ApiKey;
-        }
 
         [Serializable]
         public class GeneralOptions
@@ -33,15 +30,11 @@ namespace Infura.Unity
 
         public InfuraOptionsData InfuraOptions;
 
-        public CNFTOptions OrganizationOptions;
-        
         public IpfsOptions IpfsOptions;
 
         public GeneralOptions NetworkOptions;
-        
-        public CNFTClient OrganizationCustody { get; private set; }
 
-        public SDK.Ipfs Ipfs
+        public SDK.Network.Ipfs Ipfs
         {
             get
             {
@@ -78,9 +71,14 @@ namespace Infura.Unity
             
             Auth = new Auth(InfuraOptions.ProjectId, InfuraOptions.SecretId, NetworkOptions.RpcUrl, NetworkOptions.Chain, IpfsOptions);
             SelfCustody = new ApiClient(Auth);
-            OrganizationCustody = new CNFTClient(OrganizationOptions.ApiKey, Auth.Ipfs);
             
             SdkReadyTaskSource.SetResult(true);
+        }
+        
+        public async Task<OrgApiClient> GetOrganizationCustody(string orgId)
+        {
+            await SdkReadyTask;
+            return new OrgApiClient(orgId, Auth.Ipfs);
         }
     }
 }

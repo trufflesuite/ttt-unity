@@ -6,10 +6,11 @@ namespace Infura.Unity.Utils
 {
     public static class ImageHelper
     {
-        public class ImageAttachment
+        public class GenericAttachment<T>
         {
-            internal Func<Image> imageFunc;
-
+            internal Func<T> grabHolder;
+            internal Action<T, Texture2D> holderFunc;
+            
             public void ShowUrl(string url)
             {
                 if (url.StartsWith("ipfs://"))
@@ -17,17 +18,18 @@ namespace Infura.Unity.Utils
                 
                 ImageDownloadManager.Instance.EnqueueRequest(url, tex =>
                 {
-                    var image = imageFunc();
-                    image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+                    var holder = grabHolder();
+                    holderFunc(holder, tex);
                 });
             }
         }
 
-        public static ImageAttachment With(Func<Image> func)
+        public static GenericAttachment<Image> With(Func<Image> func)
         {
-            return new ImageAttachment()
+            return new GenericAttachment<Image>()
             {
-                imageFunc = func
+                grabHolder = func,
+                holderFunc = ((image, tex) => image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero))
             };
         }
     }

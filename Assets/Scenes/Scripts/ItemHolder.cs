@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Infura.SDK;
+using Infura.SDK.Organization;
 using Infura.Unity.Utils;
 using MetaMask.Unity;
 using TMPro;

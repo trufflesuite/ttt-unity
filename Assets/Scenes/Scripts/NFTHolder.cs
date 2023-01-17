@@ -1,5 +1,6 @@
 ﻿using System;
 using Infura.SDK;
+using Infura.SDK.SelfCustody;
 using Infura.Unity.Utils;
 using TMPro;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Scenes.Scripts
 
         private void Start()
         {
-            name.text = NftData.TokenId;
+            name.text = NftData.TokenId.ToString();
             collectionId.text = NftData.Contract;
             ImageHelper.With(() => image).ShowUrl(NftData.ImageUrl);
         }
