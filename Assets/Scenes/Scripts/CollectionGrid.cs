@@ -21,7 +21,7 @@ namespace Scenes.Scripts
 
         public ItemGrid itemGrid;
         public GameObject collectionPrefab;
-        public string organizationId;
+        public string organizationApiKey;
 
         private void Start()
         {
@@ -34,9 +34,7 @@ namespace Scenes.Scripts
                 Destroy(child.gameObject);
             }
 
-            await sdk.SdkReadyTask;
-
-            var org = await sdk.LinkOrganizationCustody(organizationId);
+            var org = await sdk.LinkOrganizationCustody(organizationApiKey);
             var collections = await org.GetAllCollections();
 
             foreach (var collection in collections)

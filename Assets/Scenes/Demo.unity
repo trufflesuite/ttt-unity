@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 43000471}
   - component: {fileID: 43000474}
   - component: {fileID: 43000475}
+  - component: {fileID: 43000476}
   m_Layer: 0
   m_Name: SDK
   m_TagString: Untagged
@@ -358,8 +359,6 @@ MonoBehaviour:
   InfuraOptions:
     ProjectId: deda916bb6084baf884aa84acd1cd143
     SecretId: 37fb7813e5a147ae899783c50aa91ee9
-  OrganizationOptions:
-    ApiKey: 56ac53cb592a49cd8fac1d0ea6eecfd7
   IpfsOptions:
     projectId: 
     apiKeySecret: 
@@ -421,6 +420,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listeners:
   - {fileID: 450762525}
+--- !u!114 &43000476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43000470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228b7505062b4e388d96b9fe585ae713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &156320321
 GameObject:
   m_ObjectHideFlags: 0
@@ -4319,6 +4330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemGrid: {fileID: 531812621}
   collectionPrefab: {fileID: 7975118300886584802, guid: 8ca395a35b5500e448d338bfc0b3aa8c, type: 3}
+  organizationApiKey: 18cb94c1f4ed439ea5088e94b5b412da
 --- !u!114 &1945808827
 MonoBehaviour:
   m_ObjectHideFlags: 0
