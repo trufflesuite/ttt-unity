@@ -61,14 +61,14 @@ namespace Infura.SDK.SelfCustody
             IpfsClient = auth.Ipfs;
         }
 
-        public Task<List<NftItem>> GetNfts(string publicAddress) => ToList(GetNftsObservable(publicAddress));
+        public Task<List<NftItem>> GetNfts(string publicAddress) => GetNftsObservable(publicAddress).AsList();
 
 
         public IObservable<NftItem> GetNftsObservable(string publicAddress) =>
             ObservablePageante<NftAssetsResponse, NftItem>($"{ApiPath}/accounts/{publicAddress}/assets/nfts");
 
         public Task<List<NftItem>> GetNftsForCollection(string contractAddress) =>
-            ToList(GetNftsForCollectionObservable(contractAddress));
+            GetNftsForCollectionObservable(contractAddress).AsList();
 
         public IObservable<NftItem> GetNftsForCollectionObservable(string contractAddress) =>
             ObservablePageante<NftAssetsResponse, NftItem>($"{ApiPath}/nfts/{contractAddress}/tokens");
@@ -212,7 +212,7 @@ namespace Infura.SDK.SelfCustody
             return IpfsClient.UploadArray(metadata, isErc1155);
         }
 
-        public Task<List<NftItem>> SearchNfts(string query) => ToList(SearchNftsObservable(query));
+        public Task<List<NftItem>> SearchNfts(string query) => SearchNftsObservable(query).AsList();
 
         public IObservable<NftItem> SearchNftsObservable(string query) =>
             ObservablePageante<SearchNft, SearchNftResult, NftItem>($"{ApiPath}/nfts/search?query={query}", item =>
@@ -278,17 +278,6 @@ namespace Infura.SDK.SelfCustody
                     }
                 } while (!cancel.IsCancellationRequested && data != null && !string.IsNullOrWhiteSpace(data.Cursor));
             });
-        }
-        
-        internal async Task<List<T>> ToList<T>(IObservable<T> observable)
-        {
-            List<T> nfts = new List<T>();
-            TaskCompletionSource<bool> wait = new TaskCompletionSource<bool>();
-            
-            observable.Subscribe(ni => nfts.Add(ni), () => wait.SetResult(true));
-            await wait.Task;
-            
-            return nfts;
         }
     }
 }
