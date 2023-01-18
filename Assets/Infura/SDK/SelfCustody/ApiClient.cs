@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Infura.SDK.Common;
@@ -31,7 +30,7 @@ namespace Infura.SDK.SelfCustody
         /// <summary>
         /// 
         /// </summary>
-        public string ApiPath { get; }
+        public string ApiPath { get; private set; }
         
         /// <summary>
         /// 
@@ -59,6 +58,12 @@ namespace Infura.SDK.SelfCustody
             this.HttpClient = HttpServiceFactory.NewHttpService(NFT_API_URL, Auth.ApiAuth);
 
             IpfsClient = auth.Ipfs;
+        }
+
+        public void UpdateChain(Chains chains)
+        {
+            this.Auth.ChainId = chains;
+            this.ApiPath = $"/networks/{(int) Auth.ChainId}";
         }
 
         public Task<List<NftItem>> GetNfts(string publicAddress) => GetNftsObservable(publicAddress).AsList();
@@ -239,13 +244,13 @@ namespace Infura.SDK.SelfCustody
             return orgApi;
         }
 
-        internal IObservable<T> ObservablePageante<TR, T>(string apiUrl)
+        public IObservable<T> ObservablePageante<TR, T>(string apiUrl)
             where TR : ICursor, IResponseSet<T>
         {
             return ObservablePageante<TR, T, T>(apiUrl, arg => arg);
         }
 
-        internal IObservable<R> ObservablePageante<TR, T, R>(string apiUrl, Func<T, R> selector) where TR : ICursor, IResponseSet<T>
+        public IObservable<R> ObservablePageante<TR, T, R>(string apiUrl, Func<T, R> selector) where TR : ICursor, IResponseSet<T>
         {
             if (selector == null)
                 throw new ArgumentException("Selector is null");

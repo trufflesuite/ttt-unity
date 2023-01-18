@@ -29,7 +29,7 @@ namespace Infura.SDK.SelfCustody
         /// <summary>
         /// 
         /// </summary>
-        public Chains ChainId { get; }
+        public Chains ChainId { get; set; }
         
         /// <summary>
         /// 
