@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Infura.SDK.SelfCustody.Models
 {
-    public class SearchNft
+    public class SearchNft : ICursor, IResponseSet<SearchNftResult>
     {
         [JsonProperty("total")]
         public BigInteger Total { get; set; }
@@ -28,5 +28,13 @@ namespace Infura.SDK.SelfCustody.Models
         public string SearchQuery { get; internal set; }
         
         internal ApiClient Client { get; set; }
+
+        public SearchNftResult[] Data
+        {
+            get
+            {
+                return Nfts;
+            }
+        }
     }
 }

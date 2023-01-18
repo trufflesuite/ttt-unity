@@ -75,7 +75,7 @@ namespace Infura.Unity
             SdkReadyTaskSource.SetResult(true);
         }
         
-        public async Task<OrgApiClient> GetOrganizationCustody(string orgId)
+        public async Task<OrgApiClient> LinkOrganizationCustody(string orgId)
         {
             await SdkReadyTask;
             return new OrgApiClient(orgId, Auth.Ipfs);

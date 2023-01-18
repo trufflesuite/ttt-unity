@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Infura.SDK.Common;
 using Infura.SDK.Network;
+using Infura.SDK.Organization;
 using Infura.SDK.SelfCustody.Models;
 using Newtonsoft.Json;
 
@@ -42,6 +43,8 @@ namespace Infura.SDK.SelfCustody
         /// </summary>
         public Network.Ipfs IpfsClient { get; }
 
+        private Dictionary<string, OrgApiClient> _orgApiClients = new Dictionary<string, OrgApiClient>();
+
         /// <summary>
         /// 
         /// </summary>
@@ -58,57 +61,17 @@ namespace Infura.SDK.SelfCustody
             IpfsClient = auth.Ipfs;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="publicAddress"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public IObservable<NftItem> GetNfts(string publicAddress)
-        {
-            if (string.IsNullOrWhiteSpace(publicAddress))
-                throw new ArgumentException("Invalid account address");
+        public Task<List<NftItem>> GetNfts(string publicAddress) => ToList(GetNftsObservable(publicAddress));
 
-            return Observable.Create<NftItem>(async (observer, cancel) =>
-            {
-                NftAssetsResponse data = null;
-                do
-                {
-                    var apiUrl = $"{ApiPath}/accounts/{publicAddress}/assets/nfts{(data != null ? $"?cursor={data.Cursor}" : "")}";
 
-                    var json = await this.HttpClient.Get(apiUrl);
+        public IObservable<NftItem> GetNftsObservable(string publicAddress) =>
+            ObservablePageante<NftAssetsResponse, NftItem>($"{ApiPath}/accounts/{publicAddress}/assets/nfts");
 
-                    data = JsonConvert.DeserializeObject<NftAssetsResponse>(json);
-                    
-                    if (data == null) continue;
-                    
-                    foreach (var item in data.Assets)
-                    {
-                        observer.OnNext(item);
-                    }
-                } while (data != null && !string.IsNullOrWhiteSpace(data.Cursor));
-            });
-        }
+        public Task<List<NftItem>> GetNftsForCollection(string contractAddress) =>
+            ToList(GetNftsForCollectionObservable(contractAddress));
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="contractAddress"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public async Task<NftAssetsResponse> GetNftsForCollection(string contractAddress)
-        {
-            if (string.IsNullOrWhiteSpace(contractAddress))
-                throw new ArgumentException("Invalid contract address");
-
-            var apiUrl = $"{ApiPath}/nfts/{contractAddress}/tokens";
-
-            var json = await this.HttpClient.Get(apiUrl);
-
-            var data = JsonConvert.DeserializeObject<NftAssetsResponse>(json);
-
-            return data;
-        }
+        public IObservable<NftItem> GetNftsForCollectionObservable(string contractAddress) =>
+            ObservablePageante<NftAssetsResponse, NftItem>($"{ApiPath}/nfts/{contractAddress}/tokens");
 
         /// <summary>
         /// 
@@ -145,6 +108,29 @@ namespace Infura.SDK.SelfCustody
             var json = await HttpClient.Get(apiUrl);
 
             return JsonConvert.DeserializeObject<GenericMetadataResponse<Metadata>>(json);
+        }
+
+        public Task<NftCollection> GetCollectionForItem(NftItem item)
+        {
+            return GetCollection(item.Contract);
+        }
+        
+        public async Task<NftCollection> GetCollection(string contractAddress)
+        {
+            if (string.IsNullOrWhiteSpace(contractAddress))
+                throw new ArgumentException("Invalid account address");
+
+            var apiUrl = $"{ApiPath}/nfts/{contractAddress}";
+            var json = await HttpClient.Get(apiUrl);
+
+            var collection = JsonConvert.DeserializeObject<NftCollection>(json);
+
+            if (collection == null) return null;
+            
+            foreach (var org in _orgApiClients.Values)
+                await collection.TryLinkOrganization(org);
+
+            return collection;
         }
 
         /// <summary>
@@ -225,41 +211,84 @@ namespace Infura.SDK.SelfCustody
 
             return IpfsClient.UploadArray(metadata, isErc1155);
         }
-        
-        public IObservable<NftItem> SearchNfts(string query)
+
+        public Task<List<NftItem>> SearchNfts(string query) => ToList(SearchNftsObservable(query));
+
+        public IObservable<NftItem> SearchNftsObservable(string query) =>
+            ObservablePageante<SearchNft, SearchNftResult, NftItem>($"{ApiPath}/nfts/search?query={query}", item =>
+                new NftItem()
+                {
+                    BlockNumberMinted = item.BlockNumberMinted,
+                    Contract = item.TokenAddress,
+                    CreatedAt = item.CreatedAt,
+                    Metadata = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.MetadataJson),
+                    MinterAddress = item.MinterAddress,
+                    TokenHash = item.TokenHash,
+                    TokenId = item.TokenId,
+                    TransactionMinted = item.TransactionMinted,
+                    Type = item.ContractType
+                });
+
+        public OrgApiClient LinkOrganization(string organizationId)
         {
-            return Observable.Create<NftItem>(async (observer, cancel) =>
+            if (_orgApiClients.ContainsKey(organizationId))
+                return _orgApiClients[organizationId];
+            
+            var orgApi = new OrgApiClient(organizationId, IpfsClient);
+            _orgApiClients.Add(organizationId, orgApi);
+            return orgApi;
+        }
+
+        internal IObservable<T> ObservablePageante<TR, T>(string apiUrl)
+            where TR : ICursor, IResponseSet<T>
+        {
+            return ObservablePageante<TR, T, T>(apiUrl, arg => arg);
+        }
+
+        internal IObservable<R> ObservablePageante<TR, T, R>(string apiUrl, Func<T, R> selector) where TR : ICursor, IResponseSet<T>
+        {
+            if (selector == null)
+                throw new ArgumentException("Selector is null");
+
+            return Observable.Create<R>(async (observer, cancel) =>
             {
-                SearchNft data = null;
+                TR data = default;
                 do
                 {
-                    var apiUrl = $"{ApiPath}/nfts/search?query={query}{(data != null ? $"&cursor={data.Cursor}" : "")}";
-                    var json = await HttpClient.Get(apiUrl);
-
-                    data = JsonConvert.DeserializeObject<SearchNft>(json);
+                    var cursor = data != null ? $"{(apiUrl.Contains("?") ? "&" : "?")}cursor={data.Cursor}" : "";
+                    var fullUrl = $"{apiUrl}{cursor}";
+                    
+                    var json = await HttpClient.Get(fullUrl);
+                    
+                    data = JsonConvert.DeserializeObject<TR>(json);
 
                     if (data == null) continue;
 
-                    data.SearchQuery = query;
-                    data.Client = this;
-                    
-                    foreach (var item in data.Nfts)
+                    foreach (var item in data.Data)
                     {
-                        observer.OnNext(new NftItem()
+                        var result = selector(item);
+                        
+                        if (result is IOrgLinkable linkable)
                         {
-                            BlockNumberMinted = item.BlockNumberMinted,
-                            Contract = item.TokenAddress,
-                            CreatedAt = item.CreatedAt,
-                            Metadata = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.MetadataJson),
-                            MinterAddress = item.MinterAddress,
-                            TokenHash = item.TokenHash,
-                            TokenId = item.TokenId,
-                            TransactionMinted = item.TransactionMinted,
-                            Type = item.ContractType
-                        });
+                            foreach (var org in _orgApiClients.Values)
+                                await linkable.TryLinkOrganization(org);
+                        }
+                        
+                        observer.OnNext(result);
                     }
-                } while (data != null && !string.IsNullOrWhiteSpace(data.Cursor));
+                } while (!cancel.IsCancellationRequested && data != null && !string.IsNullOrWhiteSpace(data.Cursor));
             });
+        }
+        
+        internal async Task<List<T>> ToList<T>(IObservable<T> observable)
+        {
+            List<T> nfts = new List<T>();
+            TaskCompletionSource<bool> wait = new TaskCompletionSource<bool>();
+            
+            observable.Subscribe(ni => nfts.Add(ni), () => wait.SetResult(true));
+            await wait.Task;
+            
+            return nfts;
         }
     }
 }

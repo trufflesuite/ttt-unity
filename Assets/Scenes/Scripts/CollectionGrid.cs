@@ -17,8 +17,11 @@ namespace Scenes.Scripts
         [Inject]
         private InfuraSdk sdk;
 
+        private OrgApiClient org;
+
         public ItemGrid itemGrid;
         public GameObject collectionPrefab;
+        public string organizationId;
 
         private void Start()
         {
@@ -33,16 +36,8 @@ namespace Scenes.Scripts
 
             await sdk.SdkReadyTask;
 
-            var nfts = await sdk.SelfCustody.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
-            
-            Debug.Log("========");
-            Debug.Log(nfts.Total);
-            Debug.Log(nfts.PageNumber);
-            Debug.Log(nfts.Type);
-            Debug.Log(nfts.Assets.Length);
-            Debug.Log("========");
-            
-            /*var collections = await sdk.OrganizationCustody.GetAllCollections();
+            var org = await sdk.LinkOrganizationCustody(organizationId);
+            var collections = await org.GetAllCollections();
 
             foreach (var collection in collections)
             {
@@ -53,7 +48,7 @@ namespace Scenes.Scripts
                 var btn = collectionInstance.GetComponent<Button>();
                 if (btn != null)
                     btn.onClick.AddListener(delegate { CollectionSelected(collection); });
-            }*/
+            }
         }
 
         private void CollectionSelected(CollectionData collectionData)

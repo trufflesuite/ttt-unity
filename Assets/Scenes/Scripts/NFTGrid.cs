@@ -34,7 +34,7 @@ namespace Scenes.Scripts
 
             var nfts = await sdk.SelfCustody.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
 
-            foreach (var nft in nfts.Assets)
+            foreach (var nft in nfts)
             {
                 var collectionInstance = Instantiate(nftPrefab, transform);
                 var collectionDataHolder = collectionInstance.GetComponent<NFTHolder>();

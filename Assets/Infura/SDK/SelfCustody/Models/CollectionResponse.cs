@@ -1,9 +1,10 @@
 ﻿using Infura.SDK.SelfCustody;
+using Infura.SDK.SelfCustody.Models;
 using Newtonsoft.Json;
 
 namespace Infura.SDK.Organization
 {
-    public class CollectionResponse
+    public class CollectionResponse : ICursor, IResponseSet<NftCollection>
     {
         [JsonProperty("pageNumber")]
         public int PageNumber { get; set; }
@@ -19,5 +20,16 @@ namespace Infura.SDK.Organization
         
         [JsonProperty("collections")]
         public NftCollection[] Collections { get; set; }
+
+        [JsonProperty("cursor")]
+        public string Cursor { get; set; }
+
+        public NftCollection[] Data
+        {
+            get
+            {
+                return Collections;
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Infura.Unity
 
             await sdk.SdkReadyTask;
 
-            var results = sdk.SelfCustody.SearchNfts("poap");
+            var results = sdk.SelfCustody.SearchNftsObservable("poap");
 
             results.Subscribe(n => Debug.Log(n.Name));
         }
