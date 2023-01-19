@@ -1,13 +1,8 @@
-﻿using System;
-using GalaxySdk.Utils;
+﻿using GalaxySdk.Utils;
 using Infura.SDK;
-using Infura.SDK.SelfCustody;
 using Infura.Unity;
-using Infura.Unity.Utils;
 using MetaMask.Unity;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Scenes.Scripts
@@ -32,7 +27,7 @@ namespace Scenes.Scripts
 
             await sdk.SdkReadyTask;
 
-            var nfts = await sdk.SelfCustody.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
+            var nfts = await sdk.API.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
 
             foreach (var nft in nfts)
             {

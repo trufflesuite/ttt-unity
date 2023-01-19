@@ -10,8 +10,14 @@ using UnityEngine.Networking;
 
 namespace Infura.Unity.Network
 {
+    /// <summary>
+    /// A Singleton class that handles all the network requests. It uses UnityWebRequest to make the requests.
+    /// </summary>
     public class UnityHttpService : Singleton<UnityHttpService>
     {
+        /// <summary>
+        /// A class that represents a single HTTP Request
+        /// </summary>
         public class UnityHttpServiceRequest
         {
             public TaskCompletionSource<string> requestTask;
@@ -22,6 +28,9 @@ namespace Infura.Unity.Network
             public string authValue;
         }
 
+        /// <summary>
+        /// A class that implements the IHttpService interface.
+        /// </summary>
         public class UnityHttpServiceProvider : IHttpService
         {
             private UnityHttpService service;
