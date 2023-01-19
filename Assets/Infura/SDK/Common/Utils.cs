@@ -40,7 +40,7 @@ namespace Infura.SDK.Common
         /// <param name="observable">The observable to convert to a list</param>
         /// <typeparam name="T">The type of the observable and resulting list</typeparam>
         /// <returns>An async task that returns a list. The task will complete when the observable completes.</returns>
-        public static async Task<List<T>> AsList<T>(this IObservable<T> observable)
+        public static async Task<List<T>> AsListAsync<T>(this IObservable<T> observable)
         {
             List<T> nfts = new List<T>();
             TaskCompletionSource<bool> wait = new TaskCompletionSource<bool>();
