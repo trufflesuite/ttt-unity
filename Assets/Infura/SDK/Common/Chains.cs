@@ -1,7 +1,7 @@
 ﻿namespace Infura.SDK.Common
 {
     /// <summary>
-    /// 
+    /// An enum representing the different types of Ethereum networks and their associated chain ID.
     /// </summary>
     public enum Chains
     {
