@@ -189,32 +189,30 @@ namespace Infura.SDK.SelfCustody
         /// 
         /// </summary>
         /// <param name="metadata"></param>
-        /// <param name="isErc1155"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Task<string> CreateFolder<T>(IEnumerable<T> metadata, bool isErc1155 = false) where T : IMetadata
+        public Task<string> CreateFolder<T>(IEnumerable<T> metadata) where T : IMetadata
         {
             if (IpfsClient == null)
                 throw new Exception("IpfsClient not setup");
 
-            return CreateFolder(metadata.Select(m => JsonConvert.SerializeObject(m)), isErc1155);
+            return CreateFolder(metadata.Select(m => JsonConvert.SerializeObject(m)));
         }
         
         /// <summary>
         /// 
         /// </summary>
         /// <param name="metadata"></param>
-        /// <param name="isErc1155"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Task<string> CreateFolder(IEnumerable<string> metadata, bool isErc1155 = false)
+        public Task<string> CreateFolder(IEnumerable<string> metadata)
         {
             if (IpfsClient == null)
                 throw new Exception("IpfsClient not setup");
 
-            return IpfsClient.UploadArray(metadata, isErc1155);
+            return IpfsClient.UploadArray(metadata);
         }
 
         public Task<List<NftItem>> SearchNfts(string query) => SearchNftsObservable(query).AsList();

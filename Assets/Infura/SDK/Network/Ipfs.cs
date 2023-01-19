@@ -14,14 +14,31 @@ using Ipfs.Http;
 
 namespace Infura.SDK.Network
 {
-    public class Ipfs
+    /// <summary>
+    /// A class that provides access to the Infura IPFS API.
+    /// </summary>
+    public class Ipfs : DisposableBase
     {
+        /// <summary>
+        /// The backing IPFS Client used to make requests to the Infura IPFS API.
+        /// </summary>
         private IpfsClient Client { get; }
 
+        /// <summary>
+        /// The project id used to authenticate requests to the Infura IPFS API.
+        /// </summary>
         public string ProjectId { get; }
         
+        /// <summary>
+        /// The project secret used to authenticate requests to the Infura IPFS API.
+        /// </summary>
         public string ApiKeySecret { get; }
 
+        /// <summary>
+        /// Create a new instance of the Infura IPFS API.
+        /// </summary>
+        /// <param name="projectId">The project Id to use for authentication</param>
+        /// <param name="apiKeySecret">The project secret to use for authentication</param>
         public Ipfs(string projectId, string apiKeySecret)
         {
             ProjectId = projectId;
@@ -55,6 +72,13 @@ namespace Infura.SDK.Network
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
 
+        /// <summary>
+        /// Upload text to IPFS with optional AddFileOptions and CancellationToken. 
+        /// </summary>
+        /// <param name="source">The text to upload to IPFS</param>
+        /// <param name="options">Optional AddFileOptions</param>
+        /// <param name="token">Optional CancellationToken to cancel the upload task</param>
+        /// <returns>The IPFS URL of the uploaded text</returns>
         public async Task<string> UploadContent(string source, AddFileOptions options = null, CancellationToken? token = null)
         {
             token ??= CancellationToken.None;
@@ -63,6 +87,16 @@ namespace Infura.SDK.Network
                 $"ipfs://{(await this.Client.FileSystem.AddTextAsync(source, options, (CancellationToken) token)).Id}";
         }
 
+        /// <summary>
+        /// Upload a file to IPFS with the file located at the given source. The source can either be a file path on the
+        /// system or a URL.
+        /// </summary>
+        /// <param name="source">The file path or url of the file to upload to IPFS</param>
+        /// <param name="name">The name of the file at the given url. This parameter is ignored if source is a local file</param>
+        /// <param name="options">Optional AddFileOptions</param>
+        /// <param name="token">Optional CancellationToken to cancel the upload task</param>
+        /// <returns>The IPFS URL of the uploaded file</returns>
+        /// <exception cref="FileNotFoundException">If the file does not exist on the local filesystem and is not a URL</exception>
         public async Task<string> UploadFile(string source, string name = "", AddFileOptions options = null, CancellationToken? token = null)
         {
             token ??= CancellationToken.None;
@@ -81,14 +115,22 @@ namespace Infura.SDK.Network
                 $"ipfs://{(await this.Client.FileSystem.AddFileAsync(source, options, (CancellationToken) token)).Id}";
         }
 
-        public async Task<string> UploadArray(IEnumerable<string> sources, bool isErc1155 = false, AddFileOptions options = null,
+        /// <summary>
+        /// Upload a new directory to IPFS. This will create a new directory and fill the directory with the
+        /// files in the source enumerable.
+        /// </summary>
+        /// <param name="sources">An enumerable of text, where each text entry is a file in the directory</param>
+        /// <param name="options">Optional AddFileOptions</param>
+        /// <param name="token">Optional CancellationToken to cancel the upload task</param>
+        /// <returns>The IPFS URL of the new directory</returns>
+        public async Task<string> UploadArray(IEnumerable<string> sources, AddFileOptions options = null,
             CancellationToken? token = null)
         {
             token ??= CancellationToken.None;
 
             var dag = await Client.Object.NewDirectoryAsync((CancellationToken) token);
 
-            var files = sources.Select(s => Client.FileSystem.AddTextAsync(s, cancel: (CancellationToken) token));
+            var files = sources.Select(s => Client.FileSystem.AddTextAsync(s, options: options, cancel: (CancellationToken) token));
 
             var links = (await Task.WhenAll(files)).Select(f => f.ToLink());
 
@@ -99,14 +141,28 @@ namespace Infura.SDK.Network
             return $"ipfs://{directory.Id}";
         }
 
+        /// <summary>
+        /// Unpin a hash from the IPFS node.
+        /// </summary>
+        /// <param name="hash">The hash to unpin</param>
+        /// <returns>All Cids that were unpined as a result of this operation</returns>
         public Task<IEnumerable<Cid>> UnpinFile(string hash)
         {
             return Client.Pin.RemoveAsync(Cid.Decode(hash));
         }
 
+        /// <summary>
+        /// Close the connection to the Infura IPFS API.
+        /// </summary>
+        /// <returns>The task that will close the connection</returns>
         public Task Close()
         {
             return Client.ShutdownAsync();
+        }
+
+        protected override async void DisposeManaged()
+        {
+            await Close();
         }
     }
 }
