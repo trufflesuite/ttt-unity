@@ -363,7 +363,7 @@ MonoBehaviour:
     projectId: 
     apiKeySecret: 
   NetworkOptions:
-    Chain: 1
+    Chain: 5
     RpcUrl: 
 --- !u!114 &43000472
 MonoBehaviour:
