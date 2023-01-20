@@ -13,7 +13,7 @@ namespace Infura.SDK.Models
         /// The token type this response contains
         /// </summary>
         [JsonProperty("type")]
-        public TokenType Type { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// The list of NFT items in this response

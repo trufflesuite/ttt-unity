@@ -1,4 +1,5 @@
-﻿using GalaxySdk.Utils;
+﻿using System;
+using GalaxySdk.Utils;
 using Infura.SDK;
 using Infura.Unity;
 using MetaMask.Unity;
@@ -10,7 +11,7 @@ namespace Scenes.Scripts
     public class NFTGrid : BindableMonoBehavior
     {
         [Inject]
-        private InfuraSdk sdk;
+        private InfuraSdk infura;
 
         public GameObject nftPrefab;
 
@@ -25,9 +26,12 @@ namespace Scenes.Scripts
                 Destroy(child.gameObject);
             }
 
-            await sdk.SdkReadyTask;
+            await infura.SdkReadyTask;
 
-            var nfts = await sdk.API.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
+            infura.API.GetNftsObservable(MetaMaskUnity.Instance.Wallet.SelectedAddress)
+                .Subscribe(AddNftToGrid);
+
+            /*var nfts = await infura.API.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
 
             foreach (var nft in nfts)
             {
@@ -38,7 +42,18 @@ namespace Scenes.Scripts
                 var btn = collectionInstance.GetComponent<Button>();
                 if (btn != null)
                     btn.onClick.AddListener(delegate { NFTSelected(nft); });
-            }
+            }*/
+        }
+
+        private void AddNftToGrid(NftItem nft)
+        {
+            var collectionInstance = Instantiate(nftPrefab, transform);
+            var collectionDataHolder = collectionInstance.GetComponent<NFTHolder>();
+            collectionDataHolder.NftData = nft;
+
+            var btn = collectionInstance.GetComponent<Button>();
+            if (btn != null)
+                btn.onClick.AddListener(delegate { NFTSelected(nft); });
         }
 
         private void NFTSelected(NftItem nftData)

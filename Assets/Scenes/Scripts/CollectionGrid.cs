@@ -1,13 +1,7 @@
-﻿using System;
-using GalaxySdk.Utils;
-using Infura.SDK;
+﻿using GalaxySdk.Utils;
 using Infura.SDK.Organization;
 using Infura.Unity;
-using Infura.Unity.Utils;
-using MetaMask.Unity;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Scenes.Scripts
@@ -15,7 +9,7 @@ namespace Scenes.Scripts
     public class CollectionGrid : BindableMonoBehavior
     {
         [Inject]
-        private InfuraSdk sdk;
+        private InfuraSdk infura;
 
         private OrgApiClient org;
 
@@ -34,9 +28,12 @@ namespace Scenes.Scripts
                 Destroy(child.gameObject);
             }
 
-            var org = await sdk.LinkOrganizationCustody(organizationApiKey);
+            var org = await infura.LinkOrganizationCustody(organizationApiKey);
             var collections = await org.GetAllCollections();
 
+            //var value = await infura.API.GetCollection(collections[0].Contract.Address);
+            
+            
             foreach (var collection in collections)
             {
                 var collectionInstance = Instantiate(collectionPrefab, transform);

@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 43000471}
   - component: {fileID: 43000474}
   - component: {fileID: 43000475}
-  - component: {fileID: 43000476}
+  - component: {fileID: 43000477}
   m_Layer: 0
   m_Name: SDK
   m_TagString: Untagged
@@ -363,7 +363,7 @@ MonoBehaviour:
     projectId: 
     apiKeySecret: 
   NetworkOptions:
-    Chain: 5
+    Chain: 1
     RpcUrl: 
 --- !u!114 &43000472
 MonoBehaviour:
@@ -420,7 +420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listeners:
   - {fileID: 450762525}
---- !u!114 &43000476
+--- !u!114 &43000477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -429,7 +429,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 43000470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 228b7505062b4e388d96b9fe585ae713, type: 3}
+  m_Script: {fileID: 11500000, guid: 947c326aa554499a9e14ea6a4ec9b2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &156320321

@@ -84,7 +84,7 @@ namespace Infura.SDK
         {
             get
             {
-                if (Metadata.ContainsKey("image"))
+                if (Metadata != null && Metadata.ContainsKey("image"))
                     return Metadata["image"] as string;
                 return "";
             }
@@ -97,7 +97,7 @@ namespace Infura.SDK
         {
             get
             {
-                if (Metadata.ContainsKey("coverImage"))
+                if (Metadata != null && Metadata.ContainsKey("coverImage"))
                     return Metadata["coverImage"] as string;
                 return "";
             }
@@ -110,7 +110,7 @@ namespace Infura.SDK
         {
             get
             {
-                if (Metadata.ContainsKey("name"))
+                if (Metadata != null && Metadata.ContainsKey("name"))
                     return Metadata["name"] as string;
                 return "";
             }
@@ -123,7 +123,7 @@ namespace Infura.SDK
         {
             get
             {
-                if (Metadata.ContainsKey("description"))
+                if (Metadata != null && Metadata.ContainsKey("description"))
                     return Metadata["description"] as string;
                 return "";
             }
@@ -136,7 +136,7 @@ namespace Infura.SDK
         {
             get
             {
-                if (Metadata.ContainsKey("attributes"))
+                if (Metadata != null && Metadata.ContainsKey("attributes"))
                     return Metadata["attributes"] as Attribute[];
                 return Array.Empty<Attribute>();
             }

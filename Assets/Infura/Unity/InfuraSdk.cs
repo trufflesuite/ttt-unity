@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Infura.SDK;
 using Infura.SDK.Common;
@@ -13,8 +14,34 @@ namespace Infura.Unity
     /// A Unity component that provides access to the Infura SDK.
     /// </summary>
     [RequireComponent(typeof(UnityHttpService))]
+    [RequireComponent(typeof(UnityMainThreadDispatcher))]
     public class InfuraSdk : MonoBehaviour
     {
+        /// <summary>
+        /// A Unity specific API Client that ensures all Observable calls are executed on the main thread. This
+        /// is done by wrapping the Observable using the UnityMainThreadDispatcher.
+        ///
+        /// This class should not be used directly. Instead, use the <see cref="InfuraSdk.ApiClient"/> class.
+        /// </summary>
+        public class UnityApiClient : ApiClient
+        {
+            private UnityMainThreadDispatcher _mtd;
+            
+            public UnityApiClient(Auth auth, UnityMainThreadDispatcher mtd) : base(auth)
+            {
+                _mtd = mtd;
+            }
+
+            protected override IObservable<TS> ObservablePaginate<TR, T, TS>(string apiUrl, Func<T, TS> selector)
+            {
+                return Observable.Create<TS>(observer =>
+                {
+                    var baseObservable = base.ObservablePaginate<TR, T, TS>(apiUrl, selector);
+                    return baseObservable.Subscribe(ts => _mtd.Enqueue(() => observer.OnNext(ts)));
+                });
+            }
+        }
+        
         /// <summary>
         /// Options for authenticating with the Infura NFT API.
         /// </summary>
@@ -78,6 +105,8 @@ namespace Infura.Unity
         }
 
         private TaskCompletionSource<bool> SdkReadyTaskSource = new TaskCompletionSource<bool>();
+        
+        private UnityMainThreadDispatcher _mtd;
 
         /// <summary>
         /// A Task that can be awaited to determine when the SDK is ready to use.
@@ -90,8 +119,10 @@ namespace Infura.Unity
             }
         }
 
-        private async void Start()  
+        private async void Start()
         {
+            _mtd = GetComponent<UnityMainThreadDispatcher>();
+            
             if (string.IsNullOrWhiteSpace(IpfsOptions.ProjectId))
             {
                 IpfsOptions = null;
@@ -104,7 +135,7 @@ namespace Infura.Unity
             }
             
             var auth = new Auth(InfuraOptions.ProjectId, InfuraOptions.SecretId, NetworkOptions.Chain, NetworkOptions.RpcUrl, IpfsOptions);
-            API = new ApiClient(Auth);
+            API = new UnityApiClient(auth, _mtd);
             
             SdkReadyTaskSource.SetResult(true);
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Infura.SDK;
-using Infura.SDK.SelfCustody;
 using Infura.Unity.Utils;
 using TMPro;
 using UnityEngine;

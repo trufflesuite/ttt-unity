@@ -674,21 +674,21 @@ namespace Infura.SDK
         }
         #endregion
 
-        #region Private Methods
-        private async Task<T> Get<T>(string fullPath)
+        #region Protected Methods
+        protected virtual async Task<T> Get<T>(string fullPath)
         {
             var json = await HttpClient.Get(fullPath);
             var data = JsonConvert.DeserializeObject<T>(json);
             return data;
         }
 
-        private IObservable<T> ObservablePaginate<TR, T>(string apiUrl)
+        protected virtual IObservable<T> ObservablePaginate<TR, T>(string apiUrl)
             where TR : ICursor, IResponseSet<T>
         {
             return ObservablePaginate<TR, T, T>(apiUrl, arg => arg);
         }
 
-        private IObservable<TS> ObservablePaginate<TR, T, TS>(string apiUrl, Func<T, TS> selector) where TR : ICursor, IResponseSet<T>
+        protected virtual IObservable<TS> ObservablePaginate<TR, T, TS>(string apiUrl, Func<T, TS> selector) where TR : ICursor, IResponseSet<T>
         {
             if (selector == null)
                 throw new ArgumentException("Selector is null");
