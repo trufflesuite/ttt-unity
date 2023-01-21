@@ -28,7 +28,9 @@ namespace Scenes.Scripts
 
             await infura.SdkReadyTask;
 
-            infura.API.GetNftsObservable(MetaMaskUnity.Instance.Wallet.SelectedAddress)
+            var address = MetaMaskUnity.Instance.Wallet.SelectedAddress;
+
+            infura.API.GetNftsObservable(address)
                 .Subscribe(AddNftToGrid);
 
             /*var nfts = await infura.API.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);

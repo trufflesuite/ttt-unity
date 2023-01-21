@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Infura.SDK.Common;
 using Infura.SDK.Network;
@@ -130,6 +131,17 @@ namespace Infura.SDK.Organization
             }
 
             return items.ToArray();
+        }
+        
+        /// <summary>
+        /// Get a specific item from a given collection. 
+        /// </summary>
+        /// <param name="collectionId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public async Task<ItemData> GetItemFromCollection(string collectionId, string itemId)
+        {
+            return (await GetItemsFromCollection(collectionId)).FirstOrDefault(i => i.Id == itemId);
         }
 
         /// <summary>

@@ -30,10 +30,17 @@ namespace Infura.SDK.Network
             return _instanceCreator(baseURL, authValue, authKey);
         }
 
+        /// <summary>
+        /// Set a IHttpService creator function that will be used to create new instances of the IHttpService interface.
+        /// This can only be invoked once during the lifetime of the application. If the creator function is already set,
+        /// then this method will throw an exception.
+        /// </summary>
+        /// <param name="creator">The function to execute to create a new IHttpService. The function signature is (baseUrl: string, authValue: string, authKey: string) => IHttpService</param>
+        /// <exception cref="Exception">If the creator function is already set</exception>
         public static void SetCreator(Func<string, string, string, IHttpService> creator)
         {
             if (_instanceCreator != null)
-                throw new Exception("IHttpService creator already set!");
+                throw new Exception("IHttpService creator already set");
 
             _instanceCreator = creator;
         }

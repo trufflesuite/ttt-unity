@@ -698,31 +698,40 @@ namespace Infura.SDK
                 TR data = default;
                 do
                 {
-                    var cursor = data != null ? $"{(apiUrl.Contains("?") ? "&" : "?")}cursor={data.Cursor}" : "";
-                    var fullUrl = $"{apiUrl}{cursor}";
-
-                    data = await Get<TR>(fullUrl);
-
-                    if (data == null) continue;
-
-                    foreach (var item in data.Data)
+                    try
                     {
-                        var result = selector(item);
-                        
-                        if (result is IOrgLinkable linkable)
+                        var cursor = data != null ? $"{(apiUrl.Contains("?") ? "&" : "?")}cursor={data.Cursor}" : "";
+                        var fullUrl = $"{apiUrl}{cursor}";
+
+                        data = await Get<TR>(fullUrl);
+
+                        if (data == null) continue;
+
+                        foreach (var item in data.Data)
                         {
-                            foreach (var org in _orgApiClients.Values)
+                            var result = selector(item);
+
+                            if (result is IOrgLinkable linkable)
                             {
-                                var linkResult = await linkable.TryLinkOrganization(org);
-                                if (linkResult)
-                                    // We don't need to attempt linking anymore if one Organization was successful
-                                    break; 
+                                foreach (var org in _orgApiClients.Values)
+                                {
+                                    var linkResult = await linkable.TryLinkOrganization(org);
+                                    if (linkResult)
+                                        // We don't need to attempt linking anymore if one Organization was successful
+                                        break;
+                                }
                             }
+
+                            observer.OnNext(result);
                         }
-                        
-                        observer.OnNext(result);
+                    }
+                    catch (Exception e)
+                    {
+                        observer.OnError(e);
                     }
                 } while (!cancel.IsCancellationRequested && data != null && !string.IsNullOrWhiteSpace(data.Cursor));
+                
+                observer.OnCompleted();
             });
         }
         #endregion
