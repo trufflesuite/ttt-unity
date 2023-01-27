@@ -2,6 +2,7 @@
 using GalaxySdk.Utils;
 using Infura.SDK;
 using Infura.Unity;
+using MetaMask.NEthereum;
 using MetaMask.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,18 +23,20 @@ namespace Scenes.Scripts
 
         private async void UpdateCollections()
         {
+            var address = MetaMaskUnity.Instance.Wallet.SelectedAddress;
+            var web3 = MetaMaskUnity.Instance.CreateWeb3();
+            var balance = await web3.Eth.GetBalance.SendRequestAsync(address);
+            
+            Debug.Log(balance);
+            
             foreach (Transform child in transform) {
                 Destroy(child.gameObject);
             }
 
             await infura.SdkReadyTask;
 
-            var address = MetaMaskUnity.Instance.Wallet.SelectedAddress;
 
-            infura.API.GetNftsObservable(address)
-                .Subscribe(AddNftToGrid);
-
-            /*var nfts = await infura.API.GetNfts(MetaMaskUnity.Instance.Wallet.SelectedAddress);
+            var nfts = await infura.API.GetNfts(address);
 
             foreach (var nft in nfts)
             {
@@ -44,7 +47,7 @@ namespace Scenes.Scripts
                 var btn = collectionInstance.GetComponent<Button>();
                 if (btn != null)
                     btn.onClick.AddListener(delegate { NFTSelected(nft); });
-            }*/
+            }
         }
 
         private void AddNftToGrid(NftItem nft)

@@ -1,5 +1,6 @@
 ﻿using System;
 using GalaxySdk.Utils;
+using MetaMask.NEthereum;
 using MetaMask.Unity;
 using TMPro;
 
@@ -10,7 +11,7 @@ namespace Scenes.Scripts
         [BindComponent]
         private TextMeshProUGUI _addressText;
 
-        private void FixedUpdate()
+        private async void FixedUpdate()
         {
             if (MetaMaskUnity.Instance != null && MetaMaskUnity.Instance.Wallet != null &&
                 !string.IsNullOrWhiteSpace(MetaMaskUnity.Instance.Wallet.SelectedAddress))

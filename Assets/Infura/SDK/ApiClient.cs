@@ -12,10 +12,317 @@ using Newtonsoft.Json;
 
 namespace Infura.SDK
 {
+    public interface IApiClient
+    {
+        /// <summary>
+        /// The IPFS Client this API Client is using for IPFS requests
+        /// </summary>
+        Network.Ipfs IpfsClient { get; }
+
+        /// <summary>
+        /// Get all transfers from a block to a block. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfers"/>
+        /// </summary>
+        /// <param name="fromBlock">The start block number to get transfers from</param>
+        /// <param name="toBlock">The end block number to get transfers from</param>
+        /// <returns>An observable that emits transfers from a block to a block. This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersObservable(BigInteger fromBlock, BigInteger toBlock);
+
+        /// <summary>
+        /// Get all transfers from a single block by block number. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="blockNumber">The block number to get transfers from</param>
+        /// <returns>An observable that emits transfers from the block at the specified blockNumber.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersByBlockObservable(BigInteger blockNumber);
+
+        /// <summary>
+        /// Get all transfers from a user by their wallet address. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="publicAddress">The wallet address to query transfers from</param>
+        /// <returns>An observable that emits transfers from the specified wallet address.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersByWalletObservable(string publicAddress);
+
+        /// <summary>
+        /// Get all transfers for an NFT from a specific NFT collection. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the NFT collection the token belogns to</param>
+        /// <param name="tokenId">The token Id of the NFT to get transfers for</param>
+        /// <returns>An observable that emits transfers from the specified NFT.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersForNftObservable(string contractAddress, string tokenId);
+
+        /// <summary>
+        /// Get all transfers for an NFT from a specific NFT collection. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="nftItem">The NFT to get transfers for</param>
+        /// <returns>An observable that emits transfers from the specified NFT.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersForNftObservable(NftItem nftItem);
+
+        /// <summary>
+        /// Get all transfers for all NFTs in a given NFT collection. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the NFT collection to get transfers from</param>
+        /// <returns>An observable that emits transfers from the specified NFT collection.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersForNftCollectionObservable(string contractAddress);
+
+        /// <summary>
+        /// Get all transfers for all NFTs in a given NFT collection. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="collection">The NFT collection to get transfers from</param>
+        /// <returns>An observable that emits transfers from the specified NFT collection.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersForNftCollectionObservable(NftCollection collection);
+
+        /// <summary>
+        /// Get all transfers for all NFTs in a given NFT collection. This returns an
+        /// observable that emits each transfer as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" transfers, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetTransfersByBlock"/>
+        /// </summary>
+        /// <param name="nftItem">The NFT that belongs to the NFT collection to get transfers from</param>
+        /// <returns>An observable that emits transfers from the specified NFT collection.
+        /// This observable completes when all transfers have been emitted.</returns>
+        IObservable<TransfersResult> GetTransfersForNftCollectionObservable(NftItem nftItem);
+
+        /// <summary>
+        /// Get all NFTs a user owns at a given wallet address. This returns an observable that emits each NFT as it is
+        /// obtained from the NFT API. This is useful for "lazy-loading" NFTs, as the function will complete as soon as the
+        /// Observable is created and started. For a "blocking" version of this function, use <see cref="ApiClient.GetNfts"/>
+        /// </summary>
+        /// <param name="publicAddress">The wallet address to query NFTs for</param>
+        /// <returns>An observable that emits NFTs the user owns. This observable completes when all NFTs have been
+        /// emitted.</returns>
+        IObservable<NftItem> GetNftsObservable(string publicAddress);
+
+        /// <summary>
+        /// Grab and deserialize specific metadata for a NFT at the given contract address and token ID. This function
+        /// will deserialize the JSON into the given type T, where T is of type IMetadata.
+        /// </summary>
+        /// <param name="contractAddress">The contract address / collection the NFT belongs to</param>
+        /// <param name="tokenId">The token ID of the NFT to get Metadata for</param>
+        /// <typeparam name="T">The type of Metadata to deserialize and return.</typeparam>
+        /// <returns>The Metadata for the NFT as type T</returns>
+        /// <exception cref="ArgumentException">If the contract address is not provided or tokenId is not provided</exception>
+        Task<T> GetTokenMetadata<T>(string contractAddress, string tokenId) where T : IMetadata;
+
+        /// <summary>
+        /// Grab and deserialize specific metadata for a given NFT item. This function
+        /// will deserialize the JSON into the given type T, where T is of type IMetadata.
+        /// </summary>
+        /// <param name="nftItem">The NFT to grab Metadata for</param>
+        /// <typeparam name="T">The type of Metadata to deserialize and return.</typeparam>
+        /// <returns>The Metadata for the NFT as type T</returns>
+        Task<T> GetTokenMetadata<T>(NftItem nftItem) where T : IMetadata;
+
+        /// <summary>
+        /// Grab and deserialize specific metadata for a given NFT item. This function
+        /// will deserialize the JSON into the type Metadata. The Metadata class ia a general-purpose
+        /// Metadata class that covers most usecases. If you need more specific Metadata, use the
+        /// generic version of this function <see cref="ApiClient.GetTokenMetadata{T}(string,string)"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address / collection the NFT belongs to</param>
+        /// <param name="tokenId">The token ID of the NFT to get Metadata for</param>
+        /// <returns>The Metadata for the NFT</returns>
+        /// <exception cref="ArgumentException">If the contract address is not provided or tokenId is not provided</exception>
+        Task<Metadata> GetTokenMetadata(string contractAddress, string tokenId);
+
+        /// <summary>
+        /// Grab and deserialize specific metadata for a given NFT item. This function
+        /// will deserialize the JSON into the type Metadata. The Metadata class ia a general-purpose
+        /// Metadata class that covers most usecases. If you need more specific Metadata, use the
+        /// generic version of this function <see cref="ApiClient.GetTokenMetadata{T}(Infura.SDK.NftItem)"/>
+        /// </summary>
+        /// <param name="nftItem">The NFT to grab Metadata for</param>
+        /// <returns>The Metadata for the NFT</returns>
+        Task<Metadata> GetTokenMetadata(NftItem nftItem);
+
+        /// <summary>
+        /// Get all NFT collections where the given user owns at least one NFT from each collection. This returns an
+        /// observable that emits each NFT collection as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" NFT collections, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetNftCollections"/>
+        /// </summary>
+        /// <param name="publicAddress">The wallet address of the user to query collections for</param>
+        /// <returns>An observable that emits NFT collections where the user owns at least one NFT from each collection.
+        /// This observable completes when all NFTs have been emitted.</returns>
+        IObservable<NftCollection> GetNftCollectionsObservable(string publicAddress);
+
+        /// <summary>
+        /// Get all NFTs that are from a specific collection / contract address. This task completes when the full list is
+        /// available, so it may take a while to complete if the collection has a large number of NFTs. For a "lazy-loading"
+        /// version of this function, use <see cref="ApiClient.GetNftsForCollectionObservable"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the collection to query NFTs for</param>
+        /// <returns>A task that returns the full list of NFTs in the collection at the given contract address</returns>
+        IObservable<NftItem> GetNftsForCollectionObservable(string contractAddress);
+
+        /// <summary>
+        /// Get the NFT Collection for a given NFT Item.
+        /// <see cref="ApiClient.GetCollection"/>
+        /// </summary>
+        /// <param name="item">The item to grab the NFT Collection from</param>
+        /// <returns>The NFT Collection that the given NFT item belongs to</returns>
+        Task<NftCollection> GetCollectionForItem(NftItem item);
+
+        /// <summary>
+        /// Get the NFT Collection at the given contract address
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the collection to obtain</param>
+        /// <returns>NFT Collection data at the given contract address</returns>
+        /// <exception cref="ArgumentException">If the contract address given is null or empty</exception>
+        Task<NftCollection> GetCollection(string contractAddress);
+
+        /// <summary>
+        /// Get all owners of a given NFT collection. This returns an
+        /// observable that emits each owner as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" owners, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetOwnersOfNftCollection(string)"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the NFT collection to query owners from</param>
+        /// <returns>An observable that emits owners from the specified NFT collection.
+        /// This observable completes when all owners have been emitted.</returns>
+        IObservable<OwnersResult> GetOwnersOfNftCollectionObservable(string contractAddress);
+
+        /// <summary>
+        /// Get all owners of a given NFT collection. This returns an
+        /// observable that emits each owner as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" owners, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetOwnersOfNftCollection(string)"/>
+        /// </summary>
+        /// <param name="collection">The NFT collection to query owners from</param>
+        /// <returns>An observable that emits owners from the specified NFT collection.
+        /// This observable completes when all owners have been emitted.</returns>
+        IObservable<OwnersResult> GetOwnersOfNftCollectionObservable(NftCollection collection);
+
+        /// <summary>
+        /// Get all owners of a given NFT. This returns an
+        /// observable that emits each owner as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" owners, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetOwnersOfNft(string,string)"/>
+        /// </summary>
+        /// <param name="contractAddress">The contract address of the NFT collection the given tokenId belongs to</param>
+        /// <param name="tokenId">The token Id of the NFT to query owners from</param>
+        /// <returns>An observable that emits owners from the specified NFT.
+        /// This observable completes when all owners have been emitted.</returns>
+        IObservable<OwnersResult> GetOwnersOfNftObservable(string contractAddress, string tokenId);
+
+        /// <summary>
+        /// Get all owners of a given NFT. This returns an
+        /// observable that emits each owner as it is obtained from the NFT API. This is useful for
+        /// "lazy-loading" owners, as the function will complete as soon as the Observable is created and started.
+        /// For a "blocking" version of this function, use <see cref="ApiClient.GetOwnersOfNft(string,string)"/>
+        /// </summary>
+        /// <param name="nftItem">The NFT to query owners from</param>
+        /// <returns>An observable that emits owners from the specified NFT.
+        /// This observable completes when all owners have been emitted.</returns>
+        IObservable<OwnersResult> GetOwnersOfNftObservable(NftItem nftItem);
+
+        /// <summary>
+        /// Get the lowest ETH based price for the given NFT collection.
+        /// </summary>
+        /// <param name="tokenAddress">The contract address of the NFT collection to get pricing data for</param>
+        /// <returns>Token price information for the given NFT collection</returns>
+        Task<TokenPrice> GetTradePrice(string tokenAddress);
+
+        /// <summary>
+        /// Get the lowest ETH based price for the given NFT collection.
+        /// </summary>
+        /// <param name="collection">The NFT collection to get pricing data for</param>
+        /// <returns>Token price information for the given NFT collection</returns>
+        Task<TokenPrice> GetTradePrice(NftCollection collection);
+
+        /// <summary>
+        /// Get the lowest ETH based price for the NFT collection that the given NFT exists inside of.
+        /// </summary>
+        /// <param name="item">The NFT get pricing data for.</param>
+        /// <returns>Token price information for the NFT collection that the given NFT exists inside of.</returns>
+        Task<TokenPrice> GetTradePrice(NftItem item);
+
+        /// <summary>
+        /// Store a file on IPFS and return the CID of the file. The file given can either
+        /// be a path to a file in the filesystem or a URL to a remote file.
+        /// </summary>
+        /// <param name="file">The path or URL of the file to store on IPFS</param>
+        /// <returns>The CID of the uploaded file</returns>
+        /// <exception cref="Exception">If no IPFS client is setup</exception>
+        Task<string> StoreFile(string file);
+
+        /// <summary>
+        /// Store metadata string on IPFS and return the CID of the file. The given metadata
+        /// must be a JSON string.
+        /// </summary>
+        /// <param name="metadata">The metadata JSON string to store on IPFS</param>
+        /// <returns>The CID of the uploaded metadata</returns>
+        /// <exception cref="Exception">If no IPFS client is setup</exception>
+        Task<string> StoreMetadata(string metadata);
+
+        /// <summary>
+        /// Store metadata as a JSON string on IPFS and return the CID of the file. The given
+        /// metadata object will be converted to JSON before being uploaded to IPFS. The type of
+        /// Metadata must implement the IMetadata interface
+        /// </summary>
+        /// <param name="metadata">The metadata object to store on IPFS</param>
+        /// <typeparam name="T">The type of the metadata object</typeparam>
+        /// <returns>The CID of the uploaded metadata</returns>
+        /// <exception cref="Exception">IF no IPFS client is setup</exception>
+        Task<string> StoreMetadata<T>(T metadata) where T : IMetadata;
+
+        /// <summary>
+        /// Create a folder of metadata files. This function will create a new folder where
+        /// the folder contains each element passed in the given IEnumerable. Each item in the
+        /// IEnumerable will be converted to a JSON string before being uploaded. The type of
+        /// Metadata must implement the IMetadata interface
+        /// </summary>
+        /// <param name="metadata">An enumerable list of metadata to place in the new folder</param>
+        /// <typeparam name="T">The type of metadata being stored</typeparam>
+        /// <returns>The CID of the new folder</returns>
+        /// <exception cref="Exception">If no IPFS client is setup</exception>
+        Task<string> CreateFolder<T>(IEnumerable<T> metadata) where T : IMetadata;
+
+        /// <summary>
+        /// Create a folder of metadata files. This function will create a new folder where
+        /// the folder contains each element passed in the given IEnumerable.
+        /// </summary>
+        /// <param name="metadata">An enumerable list of strings, where each string will be a new file in the resulting folder</param>
+        /// <returns>The CID of the new folder</returns>
+        /// <exception cref="Exception">If no IPFS client is setup</exception>
+        Task<string> CreateFolder(IEnumerable<string> metadata);
+
+        /// <summary>
+        /// Update the chain this API Client queries against
+        /// </summary>
+        /// <param name="chains">The new chain to use for queries</param>
+        void UpdateChain(Chains chains);
+    }
+
     /// <summary>
     /// The Infura NFT API client.
     /// </summary>
-    public class ApiClient
+    public class ApiClient : IApiClient
     {
         #region Constants
         /// <summary>

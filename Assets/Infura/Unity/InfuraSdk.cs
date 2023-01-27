@@ -37,7 +37,7 @@ namespace Infura.Unity
                 return Observable.Create<TS>(observer =>
                 {
                     var baseObservable = base.ObservablePaginate<TR, T, TS>(apiUrl, selector);
-                    return baseObservable.Subscribe(ts => _mtd.Enqueue(() => observer.OnNext(ts)));
+                    return baseObservable.Subscribe(ts => _mtd.Enqueue(() => observer.OnNext(ts)), () => _mtd.Enqueue(observer.OnCompleted));
                 });
             }
         }
