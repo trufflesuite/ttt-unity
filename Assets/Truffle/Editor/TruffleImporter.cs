@@ -13,34 +13,72 @@ using UnityEngine;
 
 namespace Truffle.Editor
 {
+    [InitializeOnLoad]
     public class TruffleImporter : AssetPostprocessor
     {
-        public struct TruffleArtifact
-        {
-            [JsonProperty("contractName")]
-            public string ContractName;
-            
-            [JsonProperty("abi")]
-            public object[] ABI;
-
-            [JsonProperty("bytecode")]
-            public string ByteCode;
-
-            [JsonIgnore] public ContractABI ContractABI;
-
-            [JsonIgnore] public string JsonPath;
-
-        }
-        
         public static string rootNamespace = "Truffle";
         public static string dataModelNamespace = "Data";
         public static string functionNamespace = "Functions";
         public static string eventNamespace = "Contracts";
 
+        private static GUIContent _truffleIcon = null;
+
+        static TruffleImporter()
+        {
+            EditorApplication.projectWindowItemOnGUI -= ProjectWindowItemOnGUI;
+            EditorApplication.projectWindowItemOnGUI += ProjectWindowItemOnGUI;
+        }
+
+        private static void ProjectWindowItemOnGUI(string guid, Rect selectionRect)
+        {
+            // If the width is too wide, we don't need to put the icon.
+            if (selectionRect.width / selectionRect.height >= 2)
+            {
+                return;
+            }
+            
+            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            if (!IsTruffleArtifact(assetPath))
+                return;
+
+            if (_truffleIcon == null)
+            {
+                var path = "./Assets/Truffle/Editor/Resources/Truffle_logomark.png";
+
+                if (!File.Exists(path))
+                    return;
+                
+                var iconTexture = new Texture2D(1, 1);
+                iconTexture.LoadImage(System.IO.File.ReadAllBytes(path));
+                iconTexture.Apply();
+
+                _truffleIcon = new GUIContent(iconTexture);
+            }
+
+            Vector2 selectionPosition = selectionRect.position;
+            Vector2 selectionSize = selectionRect.size;
+
+            // The x position should be a little left of the right edge.
+            float xPosition = selectionPosition.x + selectionSize.x - selectionSize.x / 3.5f;
+
+            // The y position should be a little above of the bottom edge.
+            float yPosition = selectionPosition.y + selectionSize.y - selectionSize.y / 2;
+
+            Vector2 position = new Vector2(xPosition, yPosition);
+
+            Rect newRect = selectionRect;
+            newRect.position = position;
+
+            // This is a nice number to reduce the size of the rect by to make the icon smaller
+            newRect.size /= 2.5f;
+
+            GUI.Label(newRect, _truffleIcon);
+        }
+
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            var artifacts = importedAssets.Where(x => x.EndsWith(".json")).Select(ReadAbi).Where(ca => ca != null).Cast<TruffleArtifact>();
+            var artifacts = importedAssets.Where(x => x.EndsWith(".json")).Select(x => ReadAbi(x)).Where(ca => ca != null).Cast<TruffleArtifact>();
 
             Dictionary<string, FunctionABI> fAbiCache = new Dictionary<string, FunctionABI>();
             Dictionary<string, EventABI> eAbiCache = new Dictionary<string, EventABI>();
@@ -152,13 +190,42 @@ namespace Truffle.Editor
             if (changed) AssetDatabase.Refresh();
         }
 
+        public static bool IsTruffleArtifact(string jsonPath)
+        {
+            if (!jsonPath.EndsWith(".json"))
+                return false;
+            
+            // Truffle files are big, so read them as a stream
+            // only check if contractName property in the JSON exists 
+            using (FileStream s = File.Open(jsonPath, FileMode.Open))
+            using (StreamReader sr = new StreamReader(s))
+            using (JsonReader reader = new JsonTextReader(sr))
+            {
+                while (reader.Read())
+                {
+                    // PropertyName == contractName
+                    if (reader.TokenType == JsonToken.PropertyName && reader.Path == "contractName")
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public static TruffleArtifact? ReadAbi(string jsonPath)
         {
+
             TextAsset jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(jsonPath);
+
+            if (jsonAsset == null)
+                return null;
 
             var text = jsonAsset.text;
 
-            var outputDirectory = Path.Join(Directory.GetParent(new FileInfo(jsonPath).Directory.FullName).FullName,
+            var outputDirectory = Path.Join(
+                Directory.GetParent(new FileInfo(jsonPath).Directory.FullName).FullName,
                 "csharp");
 
             if (!Directory.Exists(outputDirectory))
@@ -168,6 +235,7 @@ namespace Truffle.Editor
 
             if (string.IsNullOrEmpty(artifact.ContractName))
                 return null;
+
 
             var abiJson = JsonConvert.SerializeObject(artifact.ABI);
 
