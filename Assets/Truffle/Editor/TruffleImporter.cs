@@ -46,6 +46,7 @@ namespace Truffle.Editor
             Dictionary<string, EventABI> eAbiCache = new Dictionary<string, EventABI>();
             Dictionary<string, ErrorABI> eRAbiCache = new Dictionary<string, ErrorABI>();
             Dictionary<string, StructABI> sAbiCache = new Dictionary<string, StructABI>();
+            bool changed = false;
             foreach (var abi in artifacts)
             {
                 FixContractAbi(abi.ContractABI);
@@ -71,13 +72,13 @@ namespace Truffle.Editor
                     // If we get here, we have a duplicate function
                     function.InputParameters = original.InputParameters;
                     
-                    if (!AllParametersMatch(original.OutputParameters, function.OutputParameters))
+                    /*if (!AllParametersMatch(original.OutputParameters, function.OutputParameters))
                     {
                         // If we got here, we have a conflicting function
                         continue;
                     };
 
-                    function.OutputParameters = original.OutputParameters;
+                    function.OutputParameters = original.OutputParameters;*/
                 }
                 
                 foreach (var eventABI in abi.ContractABI.Events)
@@ -93,12 +94,11 @@ namespace Truffle.Editor
 
                     if (!AllParametersMatch(original.InputParameters, eventABI.InputParameters))
                     {
-                        // If we got here, we have a conflicting function
-                        // Rename it to something else more unique
+                        // If we got here, we have a conflicting event
                         continue;
                     };
 
-                    // If we get here, we have a duplicate function
+                    // If we get here, we have a duplicate event
                     eventABI.InputParameters = original.InputParameters;
                 }
                 
@@ -115,12 +115,11 @@ namespace Truffle.Editor
 
                     if (!AllParametersMatch(original.InputParameters, errorAbi.InputParameters))
                     {
-                        // If we got here, we have a conflicting function
-                        // Rename it to something else more unique
+                        // If we got here, we have a conflicting error
                         continue;
                     };
 
-                    // If we get here, we have a duplicate function
+                    // If we get here, we have a duplicate error
                     errorAbi.InputParameters = original.InputParameters;
                 }
                 
@@ -137,18 +136,20 @@ namespace Truffle.Editor
 
                     if (!AllParametersMatch(original.InputParameters, structABI.InputParameters))
                     {
-                        // If we got here, we have a conflicting function
-                        // Rename it to something else more unique
+                        // If we got here, we have a conflicting struct
                         structABI.Name += abi.ContractName;
                         continue;
                     };
 
-                    // If we get here, we have a duplicate function
+                    // If we get here, we have a duplicate struct
                     structABI.InputParameters = original.InputParameters;
                 }
                 
                 ImportAsset(abi);
+                changed = true;
             }
+            
+            if (changed) AssetDatabase.Refresh();
         }
 
         public static TruffleArtifact? ReadAbi(string jsonPath)
