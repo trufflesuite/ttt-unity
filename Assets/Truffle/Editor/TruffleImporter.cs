@@ -228,15 +228,14 @@ namespace Truffle.Editor
                 Directory.GetParent(new FileInfo(jsonPath).Directory.FullName).FullName,
                 "csharp");
 
-            if (!Directory.Exists(outputDirectory))
-                Directory.CreateDirectory(outputDirectory);
-
             var artifact = JsonConvert.DeserializeObject<TruffleArtifact>(text);
 
             if (string.IsNullOrEmpty(artifact.ContractName))
                 return null;
-
-
+            
+            if (!Directory.Exists(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
+            
             var abiJson = JsonConvert.SerializeObject(artifact.ABI);
 
             var abi = new GeneratorModelABIDeserialiser().DeserialiseABI(abiJson);
