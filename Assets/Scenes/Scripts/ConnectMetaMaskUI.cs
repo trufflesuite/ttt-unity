@@ -49,6 +49,7 @@ namespace Scenes.Scripts
         private void OnWalletAuthorized(object sender, EventArgs e)
         {
             HideOverlay();
+            Debug.Log(MetaMaskUnity.Instance.Wallet.SelectedAddress);
             nextUI.gameObject.SetActive(true);
             gameObject.SetActive(false);
         }
