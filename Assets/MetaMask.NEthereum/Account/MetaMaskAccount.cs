@@ -8,6 +8,7 @@ namespace MetaMask.NEthereum
     public class MetaMaskAccount : IAccount
     {
         private readonly MetaMaskWallet _wallet;
+        private readonly IClient _client;
 
         public string Address
         {
@@ -19,11 +20,20 @@ namespace MetaMask.NEthereum
 
         public ITransactionManager TransactionManager { get; }
         public INonceService NonceService { get; set; }
-        
+
+        public IClient Client
+        {
+            get
+            {
+                return _client;
+            }
+        }
+
         public MetaMaskAccount(MetaMaskWallet wallet, IClient client)
         {
             _wallet = wallet;
-            TransactionManager = new TransactionManager(client);
+            _client = client;
+            TransactionManager = new MetaMaskTransactionManager(this);
             NonceService = new InMemoryNonceService(_wallet.SelectedAddress, client);
         }
     }
