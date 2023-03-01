@@ -19,13 +19,13 @@ public class NewGameMenu : MonoBehaviour
 {
     public List<string> errors;
 
-    public string jackpotValue;
+    string jackpotValue;
     public GameObject jackpotInput;
 
-    public string playerXValue;
+    string playerXValue;
     public GameObject playerXInput;
 
-    public string playerOValue;
+    string playerOValue;
     public GameObject playerOInput;
 
     public GameObject errorDisplay;
@@ -103,27 +103,23 @@ public class NewGameMenu : MonoBehaviour
         var web3 = metaMask.CreateWeb3();
         var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
 
-        // var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
-        var startGameHandler = web3.Eth.GetContractTransactionHandler<Truffle.Functions.StartGameFunction>();
+        var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
-        // We create the StartGameFunction object here so we can attach ETH
-        // via AmountToSend.
+        var jackpotInt = Convert.ToInt32(jackpotValue.Trim());
+
+        // We create the StartGameFunction object so we can attach ETH via AmountToSend.
 
         var startGameFunction = new Truffle.Functions.StartGameFunction();
-            startGameFunction.AmountToSend = Convert.ToInt32(jackpotValue.Trim());
+            startGameFunction.AmountToSend = jackpotInt;
             startGameFunction.PayoutX = playerXValue;
             startGameFunction.PayoutO = playerOValue;
 
-        var receipt = await startGameHandler.SendRequestAndWaitForReceiptAsync(ticTacToeAddress, startGameFunction);
+        var receipt = await ticTacToe.StartGameRequestAndWaitForReceiptAsync(startGameFunction);
+        int gameId = Convert.ToInt32(receipt.Logs[0]["data"].ToString(), 16);
 
-        string flatReceipt = JsonConvert.SerializeObject(receipt);
+        PlayerPrefs.SetInt("gameId", gameId);
+        PlayerPrefs.SetInt("jackpot", jackpotInt);
 
-        Debug.Log("Receipt:");
-        Debug.Log(flatReceipt);
-
-        Debug.Log("Game ID:");
-        Debug.Log(Convert.ToInt32(receipt.Logs[0]["data"].ToString(), 16));
-
-        // SceneManager.LoadScene("TicTacToe");
+        SceneManager.LoadScene("TicTacToe");
     }
 }
