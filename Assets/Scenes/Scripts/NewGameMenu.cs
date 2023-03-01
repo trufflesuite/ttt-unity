@@ -4,10 +4,16 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
+using Truffle.Data;
 using MetaMask.Unity;
 using MetaMask.NEthereum;
 using Nethereum.JsonRpc.UnityClient;
+using Nethereum.Hex.HexTypes;
+using Nethereum.Web3;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 public class NewGameMenu : MonoBehaviour
 {
@@ -27,6 +33,7 @@ public class NewGameMenu : MonoBehaviour
     public async void ValidateForm()
     {
         errors.Clear();
+        errorDisplay.GetComponent<TMP_Text>().text = string.Empty;
 
         jackpotValue = jackpotInput.GetComponent<TMP_InputField>().text;
         playerXValue = playerXInput.GetComponent<TMP_InputField>().text;
@@ -96,36 +103,27 @@ public class NewGameMenu : MonoBehaviour
         var web3 = metaMask.CreateWeb3();
         var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
 
-        var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
+        // var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
+        var startGameHandler = web3.Eth.GetContractTransactionHandler<Truffle.Functions.StartGameFunction>();
 
-        // var jackpotBN = new BigInteger(Int32.Parse(jackpotValue));
+        // We create the StartGameFunction object here so we can attach ETH
+        // via AmountToSend.
 
-        var startGameFunction = new Truffle.Functions.StartGameFunction()
-        {
-            AmountToSend = 100,
-            PayoutX = playerXValue,
-            PayoutO = playerOValue
-        };
+        var startGameFunction = new Truffle.Functions.StartGameFunction();
+            startGameFunction.AmountToSend = Convert.ToInt32(jackpotValue.Trim());
+            startGameFunction.PayoutX = playerXValue;
+            startGameFunction.PayoutO = playerOValue;
 
-        try
-        {
-            var receipt = await ticTacToe.StartGameRequestAndWaitForReceiptAsync(startGameFunction);
-            Debug.Log(receipt);
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log(e);
-            throw;
-        }
+        var receipt = await startGameHandler.SendRequestAndWaitForReceiptAsync(ticTacToeAddress, startGameFunction);
 
-        // string url = "https://metamask-sdk-socket.metafi.codefi.network/";
+        string flatReceipt = JsonConvert.SerializeObject(receipt);
 
-        // var getLogsRequest = new EthGetLogsUnityRequest(url);
-        // var eventGameStarted = Truffle.Data.GameWonEventDTO();
-        // yield return getLogsRequest.SendRequest(eventGameStarted.CreateFilterInput());
+        Debug.Log("Receipt:");
+        Debug.Log(flatReceipt);
 
-        // var eventDecoded = getLogsRequest.Result.DecodeAllEvents<Truffle.Data.GameWonEventDTO>();
+        Debug.Log("Game ID:");
+        Debug.Log(Convert.ToInt32(receipt.Logs[0]["data"].ToString(), 16));
 
-        // Debug.Log("New game started. Game ID: " + eventDecoded[0].Event.GameId);
+        // SceneManager.LoadScene("TicTacToe");
     }
 }

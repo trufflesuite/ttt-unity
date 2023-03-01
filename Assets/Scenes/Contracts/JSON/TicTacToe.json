@@ -56,7 +56,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -75,7 +76,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -94,7 +96,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -125,7 +128,8 @@
       "name": "startGame",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -156,7 +160,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.18+commit.87f61d96\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"game_id\",\"type\":\"uint256\"}],\"name\":\"GameStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"game_id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"GameWon\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"game_id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"winner\",\"type\":\"uint256\"}],\"name\":\"endGame\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWinners\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"leaderboard\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"dest\",\"type\":\"address\"}],\"name\":\"payments\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"payout_x\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"payout_o\",\"type\":\"address\"}],\"name\":\"startGame\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"winners\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"payee\",\"type\":\"address\"}],\"name\":\"withdrawPayments\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"payments(address)\":{\"details\":\"Returns the payments owed to an address.\",\"params\":{\"dest\":\"The creditor's address.\"}},\"withdrawPayments(address)\":{\"details\":\"Withdraw accumulated payments, forwarding all gas to the recipient. Note that _any_ account can call this function, not just the `payee`. This means that contracts unaware of the `PullPayment` protocol can still receive funds this way, by having a separate account call {withdrawPayments}. WARNING: Forwarding all gas opens the door to reentrancy vulnerabilities. Make sure you trust the recipient, or are either following the checks-effects-interactions pattern or using {ReentrancyGuard}.\",\"params\":{\"payee\":\"Whose payments will be withdrawn. Causes the `escrow` to emit a {Withdrawn} event.\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/TicTacToe.sol\":\"TicTacToe\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2\",\"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y\"]},\"@openzeppelin/contracts/security/PullPayment.sol\":{\"keccak256\":\"0xbd7698fff21868e2b8d4a5652ceca6c96c1b0111b12c9d7aaef88f71373b3860\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1ebdbbe7554678abda059f843c0b0c9056a4c60a6e52617f88b64c9c9bd910b0\",\"dweb:/ipfs/QmaVqZpr6G6aaxWjupYg4vcT6U7HGWRpzKGyzixmsTWoen\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xf96f969e24029d43d0df89e59d365f277021dac62b48e1c1e3ebe0acdd7f1ca1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec772b45a624be516f1c81970caa8a2e144301e9d0921cbc1a2789fef39a1269\",\"dweb:/ipfs/QmNyjwxCrGhQMyzLD93oUobJXVe9ceJvRvfXwbEtuxPiEj\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"@openzeppelin/contracts/utils/escrow/Escrow.sol\":{\"keccak256\":\"0xabdff382f93edb8bd94b227798fc0daf64abe891403e1e525f5870c2cae8bf65\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://402701e1bf7c6314463211809668b51986f27695b5d552dcd51aed0730c66680\",\"dweb:/ipfs/QmRLv8Tr9ZV7QABCSr2ri4N1EsKGebFC87ti9794GMGLiL\"]},\"project:/contracts/TicTacToe.sol\":{\"keccak256\":\"0x5668160867f047b947ba2abab374ed08d64d8b74215976d854e6f5e9c0603fdc\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://53614cc85b5e7ff92d4951f555864863141996010fcb64fe007de1e44368316c\",\"dweb:/ipfs/QmVLAp2FDSExHepwHXtk2jcL5FzZXTvWuEFJaK6UNjDSzH\"]}},\"version\":1}",
@@ -8171,9 +8176,68 @@
     "name": "solc",
     "version": "0.8.18+commit.87f61d96.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0xBE2a2a781956C5A3c5beb85dA20F73dA6E21C244",
+      "transactionHash": "0x9962ee4f9406cccd53fb39461ce2f46137854ed9b6738283780f74cc243e9aae"
+    },
+    "5": {
+      "events": {
+        "0x50ad08f58a27f2851d7e3a1b3a6a46b290f2ce677e99642d30ff639721e77790": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "game_id",
+              "type": "uint256"
+            }
+          ],
+          "name": "GameStarted",
+          "type": "event"
+        },
+        "0x9e59e9b0ec1755ccaf2fd4a7ed4ad5b0a678626e91834aee53ebdf1356bd390a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "game_id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "winner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "GameWon",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6",
+      "transactionHash": "0x1177f33f70dff3abd0752641c597f97f39172ab922953497a998bf5ad6d6a5bb"
+    },
+    "1677109032011": {
+      "events": {},
+      "links": {},
+      "address": "0x5798100a02F4E8f7332F6F1241ee2B0ECA8bAaC8",
+      "transactionHash": "0xd1df8ae26241420e712c74e7c582c3f4244f2d03492aeea62217f462be696dfe"
+    }
+  },
   "schemaVersion": "3.4.11",
-  "updatedAt": "2023-02-22T21:42:49.579Z",
+  "updatedAt": "2023-02-23T01:24:55.023Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

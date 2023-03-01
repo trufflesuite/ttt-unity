@@ -6,6 +6,7 @@ using Nethereum.JsonRpc.Client;
 using Nethereum.JsonRpc.Client.RpcMessages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace MetaMask.NEthereum
 {
@@ -18,7 +19,7 @@ namespace MetaMask.NEthereum
             this._metaMask = metaMask;
         }
         
-        private static readonly Random rng = new Random();
+        private static readonly System.Random rng = new System.Random();
         private static readonly DateTime UnixEpoch =
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -50,9 +51,18 @@ namespace MetaMask.NEthereum
                 Parameters = rpcRequestMessage.RawParameters
             });
 
-            var convertedResponse = JsonConvert.DeserializeObject<JToken>(response.ToString());
-
-            return new RpcResponseMessage(rpcRequestMessage.Id, convertedResponse);
+            try
+            {
+                var convertedResponse = JsonConvert.DeserializeObject<JToken>(response.ToString());
+                return new RpcResponseMessage(rpcRequestMessage.Id, convertedResponse);
+            }
+            catch (JsonReaderException jex)
+            {
+                // Sometimes we'll get back a tx hash instead of a response object.
+                // For those cases we catch the JSON error and use the hash string directly.
+                var stringResponse = response.ToString();
+                return new RpcResponseMessage(rpcRequestMessage.Id, stringResponse);
+            }
         }
     }
 }
