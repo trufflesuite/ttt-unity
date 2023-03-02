@@ -1,6 +1,6 @@
-# Web3 Tic Tac Toe with Consensys!
+# Web3 Tic Tac Toe with Consensys! (Unity Game)
 
-This repo contains a Unity tic tac toe game with a betting and payout system powered by an Ethereum smart contract.
+This repo is 1 of 2 and contains the Unity game powered [this smart contract](https://github.com/trufflesuite/ttt-contracts). You'll probably need both this repo and the Unity game if you plan to modify the game's functionality.
 
 ## Getting Started
 
