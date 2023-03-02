@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using TMPro;
 using MetaMask.NEthereum;
@@ -35,7 +36,7 @@ namespace Scenes.Menu.Scripts
 
                 if (payments > 0)
                 {
-                    payoutAmount.GetComponent<TMP_Text>().text = payments.ToString() + " Wei";
+                    payoutAmount.GetComponent<TMP_Text>().text = payments.ToString("X") + " Wei";
                     collectButton.SetActive(true);
                 }
                 else
@@ -48,6 +49,25 @@ namespace Scenes.Menu.Scripts
             {
                 payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
             }
+        }
+
+        public async void CollectPayments()
+        {
+            Debug.Log("Collecting payments...");
+
+            var metaMask = MetaMaskUnity.Instance;
+            var web3 = metaMask.CreateWeb3();
+            var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
+
+            var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
+
+            var transactionHash = await ticTacToe.WithdrawPaymentsRequestAndWaitForReceiptAsync(MetaMaskUnity.Instance.Wallet.SelectedAddress);
+
+            Debug.Log("Transaction hash: " + transactionHash);
+
+            CancelInvoke();
+            payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
+            collectButton.SetActive(false);
         }
     }
 }

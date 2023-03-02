@@ -58,6 +58,8 @@ namespace MetaMask.NEthereum
             }
             catch (JsonReaderException jex)
             {
+                Debug.Log(jex);
+
                 // Sometimes we'll get back a tx hash instead of a response object.
                 // For those cases we catch the JSON error and use the hash string directly.
                 var stringResponse = response.ToString();

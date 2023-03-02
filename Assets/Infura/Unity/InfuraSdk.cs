@@ -119,7 +119,7 @@ namespace Infura.Unity
             }
         }
 
-        private async void Start()
+        private void Start()
         {
             _mtd = GetComponent<UnityMainThreadDispatcher>();
             

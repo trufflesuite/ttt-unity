@@ -13,7 +13,18 @@ namespace Scenes.Menu.Scripts
 
         private void Start()
         {
-            Connect();
+            if (MetaMaskUnity.Instance != null && MetaMaskUnity.Instance.Wallet != null && !string.IsNullOrWhiteSpace(MetaMaskUnity.Instance.Wallet.SelectedAddress))
+            {
+                addressContainer.gameObject.SetActive(true);
+                payoutContainer.gameObject.SetActive(true);
+                nextUI.gameObject.SetActive(true);
+                
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                Connect();
+            }
         }
 
         public void Connect()

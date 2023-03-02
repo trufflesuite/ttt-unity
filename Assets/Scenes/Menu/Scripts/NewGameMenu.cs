@@ -30,14 +30,14 @@ public class NewGameMenu : MonoBehaviour
 
     public GameObject errorDisplay;
 
-    public async void ValidateForm()
+    public void ValidateForm()
     {
         errors.Clear();
         errorDisplay.GetComponent<TMP_Text>().text = string.Empty;
 
-        jackpotValue = jackpotInput.GetComponent<TMP_InputField>().text;
-        playerXValue = playerXInput.GetComponent<TMP_InputField>().text;
-        playerOValue = playerOInput.GetComponent<TMP_InputField>().text;
+        jackpotValue = jackpotInput.GetComponent<TMP_InputField>().text.Trim();
+        playerXValue = playerXInput.GetComponent<TMP_InputField>().text.Trim();
+        playerOValue = playerOInput.GetComponent<TMP_InputField>().text.Trim();
 
         // Regex from: https://regex101.com/r/dF5yhK/1/debugger
         string pattern = "^0x[a-fA-F0-9]{40}$";
@@ -105,12 +105,13 @@ public class NewGameMenu : MonoBehaviour
 
         var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
-        var jackpotInt = Convert.ToInt32(jackpotValue.Trim());
+        var jackpotInt = Convert.ToInt32(jackpotValue);
+        var jackpotBN = new HexBigInteger(jackpotInt);
 
         // We create the StartGameFunction object so we can attach ETH via AmountToSend.
 
         var startGameFunction = new Truffle.Functions.StartGameFunction();
-            startGameFunction.AmountToSend = jackpotInt;
+            startGameFunction.AmountToSend = jackpotBN;
             startGameFunction.PayoutX = playerXValue;
             startGameFunction.PayoutO = playerOValue;
 
@@ -119,6 +120,8 @@ public class NewGameMenu : MonoBehaviour
 
         PlayerPrefs.SetInt("gameId", gameId);
         PlayerPrefs.SetInt("jackpot", jackpotInt);
+        PlayerPrefs.SetString("playerX", playerXValue);
+        PlayerPrefs.SetString("playerO", playerOValue);
 
         SceneManager.LoadScene("TicTacToe");
     }

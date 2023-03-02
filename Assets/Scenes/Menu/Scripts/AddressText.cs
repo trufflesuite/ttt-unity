@@ -11,7 +11,7 @@ namespace Scenes.Menu.Scripts
         [BindComponent]
         private TextMeshProUGUI _addressText;
 
-        private async void FixedUpdate()
+        private void FixedUpdate()
         {
             if (MetaMaskUnity.Instance != null && MetaMaskUnity.Instance.Wallet != null &&
                 !string.IsNullOrWhiteSpace(MetaMaskUnity.Instance.Wallet.SelectedAddress))
