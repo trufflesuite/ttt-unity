@@ -4,7 +4,7 @@ using MetaMask.NEthereum;
 using MetaMask.Unity;
 using TMPro;
 
-namespace Scenes.Scripts
+namespace Scenes.Menu.Scripts
 {
     public class AddressText : BindableMonoBehavior
     {
