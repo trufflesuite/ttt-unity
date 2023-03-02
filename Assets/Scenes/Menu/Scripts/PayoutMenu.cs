@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -5,6 +6,7 @@ using UnityEngine;
 using TMPro;
 using MetaMask.NEthereum;
 using MetaMask.Unity;
+using Newtonsoft.Json;
 
 namespace Scenes.Menu.Scripts
 {
@@ -12,6 +14,7 @@ namespace Scenes.Menu.Scripts
     {
         public GameObject payoutAmount;
         public GameObject collectButton;
+        public GameObject transactionModal;
 
         private void Start()
         {
@@ -55,19 +58,37 @@ namespace Scenes.Menu.Scripts
         {
             Debug.Log("Collecting payments...");
 
+            GameObject modalHeaderText = transactionModal.transform.Find("Panel/ModalWindow/Header/HeaderText").gameObject;
+            modalHeaderText.GetComponent<TMP_Text>().text = "Collecting Payments...";
+
+            transactionModal.SetActive(true);
+
             var metaMask = MetaMaskUnity.Instance;
             var web3 = metaMask.CreateWeb3();
             var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
 
             var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
-            var transactionHash = await ticTacToe.WithdrawPaymentsRequestAndWaitForReceiptAsync(MetaMaskUnity.Instance.Wallet.SelectedAddress);
+            try
+            {
+                var transactionHash = await ticTacToe.WithdrawPaymentsRequestAndWaitForReceiptAsync(MetaMaskUnity.Instance.Wallet.SelectedAddress);
 
-            Debug.Log("Transaction hash: " + transactionHash);
+                transactionModal.SetActive(false);
 
-            CancelInvoke();
-            payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
-            collectButton.SetActive(false);
+                CancelInvoke();
+                payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
+                collectButton.SetActive(false);
+            }
+            catch(Exception e)
+            {
+                var result = JsonConvert.DeserializeObject<IDictionary<string, int>>(e.Message);
+
+                if(result["code"] == 4001)
+                {
+                    Debug.Log("Transaction rejected");
+                    transactionModal.SetActive(false);
+                }
+            }
         }
     }
 }

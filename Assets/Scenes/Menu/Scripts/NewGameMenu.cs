@@ -30,6 +30,8 @@ public class NewGameMenu : MonoBehaviour
 
     public GameObject errorDisplay;
 
+    public GameObject transactionModal;
+
     public void ValidateForm()
     {
         errors.Clear();
@@ -97,6 +99,11 @@ public class NewGameMenu : MonoBehaviour
 
     public async void InitializeGame()
     {
+        GameObject modalHeaderText = transactionModal.transform.Find("Panel/ModalWindow/Header/HeaderText").gameObject;
+        modalHeaderText.GetComponent<TMP_Text>().text = "Starting New Game...";
+
+        transactionModal.SetActive(true);
+
         // Here we'll call the game smart contract.
 
         var metaMask = MetaMaskUnity.Instance;
@@ -115,14 +122,27 @@ public class NewGameMenu : MonoBehaviour
             startGameFunction.PayoutX = playerXValue;
             startGameFunction.PayoutO = playerOValue;
 
-        var receipt = await ticTacToe.StartGameRequestAndWaitForReceiptAsync(startGameFunction);
-        int gameId = Convert.ToInt32(receipt.Logs[0]["data"].ToString(), 16);
+        try
+        {
+            var receipt = await ticTacToe.StartGameRequestAndWaitForReceiptAsync(startGameFunction);
+            int gameId = Convert.ToInt32(receipt.Logs[0]["data"].ToString(), 16);
 
-        PlayerPrefs.SetInt("gameId", gameId);
-        PlayerPrefs.SetInt("jackpot", jackpotInt);
-        PlayerPrefs.SetString("playerX", playerXValue);
-        PlayerPrefs.SetString("playerO", playerOValue);
+            PlayerPrefs.SetInt("gameId", gameId);
+            PlayerPrefs.SetInt("jackpot", jackpotInt);
+            PlayerPrefs.SetString("playerX", playerXValue);
+            PlayerPrefs.SetString("playerO", playerOValue);
 
-        SceneManager.LoadScene("TicTacToe");
+            SceneManager.LoadScene("TicTacToe");
+        }
+        catch(Exception e)
+        {
+            var result = JsonConvert.DeserializeObject<IDictionary<string, int>>(e.Message);
+
+            if(result["code"] == 4001)
+            {
+                Debug.Log("Transaction rejected");
+                transactionModal.SetActive(false);
+            }
+        }
     }
 }
