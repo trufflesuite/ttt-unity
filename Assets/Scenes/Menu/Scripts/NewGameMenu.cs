@@ -4,86 +4,51 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using Truffle.Data;
 using MetaMask.Unity;
 using MetaMask.NEthereum;
 using Nethereum.JsonRpc.UnityClient;
-using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class NewGameMenu : MonoBehaviour
 {
-    public List<string> errors;
+    public bool errors;
 
-    string jackpotValue;
+    private string jackpotValue;
     public GameObject jackpotInput;
+    public GameObject jackpotErrorDisplay;
 
-    string playerXValue;
+    private string playerXValue;
     public GameObject playerXInput;
+    public GameObject playerXErrorDisplay;
 
-    string playerOValue;
+    private string playerOValue;
     public GameObject playerOInput;
-
-    public GameObject errorDisplay;
+    public GameObject playerOErrorDisplay;
 
     public GameObject transactionModal;
 
     public void ValidateForm()
     {
-        errors.Clear();
-        errorDisplay.GetComponent<TMP_Text>().text = string.Empty;
+        ResetErrors();
 
         jackpotValue = jackpotInput.GetComponent<TMP_InputField>().text.Trim();
         playerXValue = playerXInput.GetComponent<TMP_InputField>().text.Trim();
         playerOValue = playerOInput.GetComponent<TMP_InputField>().text.Trim();
 
-        // Regex from: https://regex101.com/r/dF5yhK/1/debugger
-        string pattern = "^0x[a-fA-F0-9]{40}$";
-        Regex ifEthereumAddress = new Regex(pattern);
+        ValidateJackpot();
+        ValidatePlayerXAddress();
+        ValidatePlayerOAddress();
 
-        // Existance Checks
+        // If there are any errors, return.
 
-        if (string.IsNullOrEmpty(jackpotValue) || jackpotValue == "0")
+        if(errors)
         {
-            errors.Add("Supply a jackpot amount greater than 0.");
-        }
-
-        if (string.IsNullOrEmpty(playerXValue))
-        {
-            errors.Add("Supply a payout address for Player X.");
-        }
-
-        if (string.IsNullOrEmpty(playerOValue))
-        {
-            errors.Add("Supply a payout address for Player O.");
-        }
-
-        // Other Checks
-
-        if (!ifEthereumAddress.IsMatch(playerXValue))
-        {
-            errors.Add("Supply a valid Ethereum address for Player X.");
-        }
-
-        if (!ifEthereumAddress.IsMatch(playerOValue))
-        {
-            errors.Add("Supply a valid Ethereum address for Player O.");
-        }
-
-        if (playerXValue == playerOValue)
-        {
-            errors.Add("Supply a different payout address for Player X or Player O; they cannot be the same.");
-        }
-
-        // Display the errors if the exist.
-
-        if (errors.Count > 0)
-        {
-            DisplayErrors(errors.ToArray());
             return;
         }
 
@@ -92,9 +57,78 @@ public class NewGameMenu : MonoBehaviour
         InitializeGame();
     }
 
-    public void DisplayErrors(string[] errorArray)
+    public void ValidateJackpot()
     {
-        errorDisplay.GetComponent<TMP_Text>().text = string.Join("\n", errorArray);
+        if (string.IsNullOrEmpty(jackpotValue) || jackpotValue == "0")
+        {
+            jackpotInput.GetComponent<Outline>().enabled = true;
+            jackpotErrorDisplay.GetComponent<TMP_Text>().text = "Supply a jackpot amount greater than 0.";
+            errors = true;
+        }
+    }
+
+    public void ValidatePlayerXAddress()
+    {
+        if (string.IsNullOrEmpty(playerXValue))
+        {
+            playerXInput.GetComponent<Outline>().enabled = true;
+            playerXErrorDisplay.GetComponent<TMP_Text>().text = "Supply a payout address for Player X.";
+            errors = true;
+            return;
+        }
+
+        string pattern = "^0x[a-fA-F0-9]{40}$";
+        Regex ifEthereumAddress = new Regex(pattern);
+
+        if (!ifEthereumAddress.IsMatch(playerXValue))
+        {
+            playerXInput.GetComponent<Outline>().enabled = true;
+            playerXErrorDisplay.GetComponent<TMP_Text>().text = "Supply a valid Ethereum address for Player X.";
+            errors = true;
+        }
+    }
+
+    public void ValidatePlayerOAddress()
+    {
+        if (string.IsNullOrEmpty(playerOValue))
+        {
+            playerOInput.GetComponent<Outline>().enabled = true;
+            playerOErrorDisplay.GetComponent<TMP_Text>().text = "Supply a payout address for Player O.";
+            errors = true;
+            return;
+        }
+
+        string pattern = "^0x[a-fA-F0-9]{40}$";
+        Regex ifEthereumAddress = new Regex(pattern);
+
+        if (!ifEthereumAddress.IsMatch(playerOValue))
+        {
+            playerOInput.GetComponent<Outline>().enabled = true;
+            playerOErrorDisplay.GetComponent<TMP_Text>().text = "Supply a valid Ethereum address for Player O.";
+            errors = true;
+            return;
+        }
+
+        if (playerXValue == playerOValue)
+        {
+            playerOInput.GetComponent<Outline>().enabled = true;
+            playerOErrorDisplay.GetComponent<TMP_Text>().text = "Player X address cannot match Player O.";
+            errors = true;
+        }
+    }
+
+    private void ResetErrors()
+    {
+        errors = false;
+
+        jackpotInput.GetComponent<Outline>().enabled = false;
+        jackpotErrorDisplay.GetComponent<TMP_Text>().text = "";
+
+        playerXInput.GetComponent<Outline>().enabled = false;
+        playerXErrorDisplay.GetComponent<TMP_Text>().text = "";
+
+        playerOInput.GetComponent<Outline>().enabled = false;
+        playerOErrorDisplay.GetComponent<TMP_Text>().text = "";
     }
 
     public async void InitializeGame()
@@ -113,12 +147,11 @@ public class NewGameMenu : MonoBehaviour
         var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
         var jackpotInt = Convert.ToInt32(jackpotValue);
-        var jackpotBN = new HexBigInteger(jackpotInt);
 
         // We create the StartGameFunction object so we can attach ETH via AmountToSend.
 
         var startGameFunction = new Truffle.Functions.StartGameFunction();
-            startGameFunction.AmountToSend = jackpotBN;
+            startGameFunction.AmountToSend = jackpotInt;
             startGameFunction.PayoutX = playerXValue;
             startGameFunction.PayoutO = playerOValue;
 
