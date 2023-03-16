@@ -73,7 +73,7 @@ public class WinUI : MonoBehaviour {
 
       var metaMask = MetaMaskUnity.Instance;
       var web3 = metaMask.CreateWeb3();
-      var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
+      var ticTacToeAddress = ContractManager.ticTacToeAddress;
 
       var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 

@@ -31,7 +31,7 @@ namespace Scenes.Menu.Scripts
             {
                 var metaMask = MetaMaskUnity.Instance;
                 var web3 = metaMask.CreateWeb3();
-                var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
+                var ticTacToeAddress = ContractManager.ticTacToeAddress;
 
                 var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
@@ -39,13 +39,13 @@ namespace Scenes.Menu.Scripts
 
                 if (payments > 0)
                 {
-                    payoutAmount.GetComponent<TMP_Text>().text = payments.ToString("X") + " Wei";
-                    collectButton.SetActive(true);
+                payoutAmount.GetComponent<TMP_Text>().text = payments.ToString("X") + " Wei";
+                collectButton.SetActive(true);
                 }
                 else
                 {
-                    payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
-                    collectButton.SetActive(false);
+                payoutAmount.GetComponent<TMP_Text>().text = "0 Wei";
+                collectButton.SetActive(false);
                 }
             }
             else
@@ -54,7 +54,7 @@ namespace Scenes.Menu.Scripts
             }
         }
 
-        public async void CollectPayments()
+    public async void CollectPayments()
         {
             Debug.Log("Collecting payments...");
 
@@ -65,7 +65,7 @@ namespace Scenes.Menu.Scripts
 
             var metaMask = MetaMaskUnity.Instance;
             var web3 = metaMask.CreateWeb3();
-            var ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
+            var ticTacToeAddress = ContractManager.ticTacToeAddress;
 
             var ticTacToe = new Truffle.Contracts.TicTacToeService(web3, ticTacToeAddress);
 
