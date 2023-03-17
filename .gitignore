@@ -66,4 +66,5 @@ crashlytics-build.properties
 mono_crash.*
 
 # Other files
+.DS_Store
 */.DS_Store
