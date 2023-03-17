@@ -49,20 +49,6 @@ namespace Truffle.Contracts
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);
         }
 
-        public Task<BigInteger> LeaderboardQueryAsync(LeaderboardFunction leaderboardFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<LeaderboardFunction, BigInteger>(leaderboardFunction, blockParameter);
-        }
-
-        
-        public Task<BigInteger> LeaderboardQueryAsync(string returnValue1, BlockParameter blockParameter = null)
-        {
-            var leaderboardFunction = new LeaderboardFunction();
-                leaderboardFunction.ReturnValue1 = returnValue1;
-            
-            return ContractHandler.QueryAsync<LeaderboardFunction, BigInteger>(leaderboardFunction, blockParameter);
-        }
-
         public Task<BigInteger> PaymentsQueryAsync(PaymentsFunction paymentsFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<PaymentsFunction, BigInteger>(paymentsFunction, blockParameter);
@@ -75,20 +61,6 @@ namespace Truffle.Contracts
                 paymentsFunction.Dest = dest;
             
             return ContractHandler.QueryAsync<PaymentsFunction, BigInteger>(paymentsFunction, blockParameter);
-        }
-
-        public Task<string> WinnersQueryAsync(WinnersFunction winnersFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<WinnersFunction, string>(winnersFunction, blockParameter);
-        }
-
-        
-        public Task<string> WinnersQueryAsync(BigInteger returnValue1, BlockParameter blockParameter = null)
-        {
-            var winnersFunction = new WinnersFunction();
-                winnersFunction.ReturnValue1 = returnValue1;
-            
-            return ContractHandler.QueryAsync<WinnersFunction, string>(winnersFunction, blockParameter);
         }
 
         public Task<string> WithdrawPaymentsRequestAsync(WithdrawPaymentsFunction withdrawPaymentsFunction)
@@ -171,17 +143,6 @@ namespace Truffle.Contracts
                 endGameFunction.Winner = winner;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(endGameFunction, cancellationToken);
-        }
-
-        public Task<List<string>> GetWinnersQueryAsync(GetWinnersFunction getWinnersFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<GetWinnersFunction, List<string>>(getWinnersFunction, blockParameter);
-        }
-
-        
-        public Task<List<string>> GetWinnersQueryAsync(BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<GetWinnersFunction, List<string>>(null, blockParameter);
         }
     }
 }

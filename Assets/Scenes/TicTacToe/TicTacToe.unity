@@ -2030,7 +2030,6 @@ GameObject:
   - component: {fileID: 1557656702}
   - component: {fileID: 1557656704}
   - component: {fileID: 1557656703}
-  - component: {fileID: 1557656705}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -2088,19 +2087,6 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
---- !u!114 &1557656705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1557656701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9da383c36dfe4518aaf93deb7042780, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ticTacToeAddress: 0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6
 --- !u!1 &1650807441
 GameObject:
   m_ObjectHideFlags: 0
@@ -2329,7 +2315,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1803599649
 RectTransform:
   m_ObjectHideFlags: 0

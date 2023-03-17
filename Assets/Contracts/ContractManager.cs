@@ -1,4 +1,4 @@
 public class ContractManager
 {
-    public static string ticTacToeAddress = "0x72509FD110C1F83c04D9811b8148A5Ba3e1f5FF6";
+    public static string ticTacToeAddress = "0x38e7C0e0D6CfEb5eD08b2643d21fAb38aC67695b";
 }

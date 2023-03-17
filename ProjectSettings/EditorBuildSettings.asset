@@ -8,9 +8,9 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: Assets/Scenes/Menu.unity
-    guid: f3b313e558fcf42e8943206c4ee3f6e7
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/TicTacToe/TicTacToe.unity
     guid: 92c66b93d14cf214fb9533d19d2d4d47
